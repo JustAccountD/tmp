@@ -621,9 +621,26 @@ __global__ void set_row_nz_bin_each_gl(const int *d_arpt, const int *d_acol,
     }
 }
 
+
+__constant__ int device_grammar_size;
+__constant__ unsigned short device_grammar_body[1000];
+__constant__ unsigned int device_grammar_tail[1000];
+
+
 __device__ __inline__ real mult(real a, real b) {
-    return a * b;
+    a <<= 16;
+    unsigned int conc = a | b;
+    real mult = 0;
+
+    for (int i = 0; i < device_grammar_size; i++) {
+        if ((device_grammar_tail[i] & conc) == device_grammar_tail[i]) {
+            mult |= device_grammar_body[i];
+        }
+    }
+    return mult;
 }
+
+
 
 void set_row_nnz(int *d_arpt, int *d_acol,
                  int *d_brpt, int *d_bcol,

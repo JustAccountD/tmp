@@ -82,6 +82,24 @@ int main(int argc, char **argv)
     sfCSR mat_a, mat_b, mat_c;
   
     /* Set CSR reading from MM file */
+    int grammar_size = 3;
+    unsigned short * grammar_body = new unsigned short[grammar_size]{0x1,0x2,0x4};
+    unsigned int * grammar_tail = new unsigned int[grammar_size]{0x00110011,0x00100010,0x00000010};
+
+    unsigned short * global_device_grammar_body = 0;
+    unsigned int * global_device_grammar_tail = 0;
+
+    cudaMalloc((void**)&global_device_grammar_body, grammar_size * sizeof(unsigned short));
+    cudaMalloc((void**)&global_device_grammar_tail, grammar_size * sizeof(unsigned int));
+
+    cudaMemcpy(global_device_grammar_body, grammar_body, grammar_size * sizeof(unsigned short), cudaMemcpyHostToDevice);
+    cudaMemcpy(global_device_grammar_tail, grammar_tail, grammar_size * sizeof(unsigned int), cudaMemcpyHostToDevice);
+
+    cudaMemcpyToSymbol(device_grammar_body, global_device_grammar_body, grammar_size * sizeof(unsigned short));
+    cudaMemcpyToSymbol(device_grammar_tail, global_device_grammar_tail, grammar_size * sizeof(unsigned int));
+    cudaMemcpyToSymbol(device_grammar_size, &grammar_size, sizeof(int));
+
+
     init_csr_matrix_from_file(&mat_a, argv[1]);
     init_csr_matrix_from_file(&mat_b, argv[1]);
   
