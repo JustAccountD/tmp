@@ -171,8 +171,8 @@ void check_spgemm_answer(sfCSR c, sfCSR ans);
 void spgemm_kernel_hash(sfCSR *a, sfCSR *b, sfCSR *c);
 
 __device__ int device_grammar_size = 2;
-__device__ unsigned short device_grammar_body[1000] = {0x1, 0x2};
-__device__ unsigned int device_grammar_tail[1000] = {0x00030003, 0x00100010};
+__device__ unsigned short* device_grammar_body;//[1000] = {0x4, 0x8};
+__device__ unsigned int* device_grammar_tail;//[1000] = {0x00030003, 0x00070007};
 
 
 
