@@ -621,6 +621,10 @@ __global__ void set_row_nz_bin_each_gl(const int *d_arpt, const int *d_acol,
     }
 }
 
+__global__ real mult(real a, real b) {
+    return a * b;
+}
+
 void set_row_nnz(int *d_arpt, int *d_acol,
                  int *d_brpt, int *d_bcol,
                  int *d_crpt,
@@ -683,13 +687,13 @@ __global__ void calculate_value_col_bin_pwarp(const int *d_arpt,
             adr = soffset + hash;
             while (1) {
                 if (shared_check[adr] == key) {
-                    atomic_fadd(shared_value + adr, aval * bval);
+                    atomic_fadd(shared_value + adr, mult(aval, bval));
                     break;
                 }
                 else if (shared_check[adr] == -1) {
                     old = atomicCAS(shared_check + adr, -1, key);
                     if (old == -1) {
-                        atomic_fadd(shared_value + adr, aval * bval);
+                        atomic_fadd(shared_value + adr, mult(aval, bval));
                         break;
                     }
                 }
@@ -786,13 +790,13 @@ __global__ void calculate_value_col_bin_each(const int *d_arpt,
                 adr = soffset + hash;
                 while (1) {
                     if (shared_check[adr] == key) {
-                        atomic_fadd(shared_value + adr, aval * bval);
+                        atomic_fadd(shared_value + adr, mult(aval, bval));
                         break;
                     }
                     else if (shared_check[adr] == -1) {
                         old = atomicCAS(shared_check + adr, -1, key);
                         if (old == -1) {
-                            atomic_fadd(shared_value + adr, aval * bval);
+                            atomic_fadd(shared_value + adr, mult(aval, bval));
                             break;
                         }
                     }
@@ -883,13 +887,13 @@ __global__ void calculate_value_col_bin_each_tb(const int *d_arpt,
             hash = (bcol * HASH_SCAL) & (SH_ROW - 1);
             while (1) {
                 if (shared_check[hash] == key) {
-                    atomic_fadd(shared_value + hash, aval * bval);
+                    atomic_fadd(shared_value + hash, mult(aval, bval));
                     break;
                 }
                 else if (shared_check[hash] == -1) {
                     old = atomicCAS(shared_check + hash, -1, key);
                     if (old == -1) {
-                        atomic_fadd(shared_value + hash, aval * bval);
+                        atomic_fadd(shared_value + hash, mult(aval, bval));
                         break;
                     }
                 }
@@ -981,13 +985,13 @@ __global__ void calculate_value_col_bin_each_gl(const int *d_arpt,
             adr = doffset + hash;
             while (1) {
                 if (d_check[adr] == key) {
-                    atomic_fadd(d_value + adr, aval * bval);
+                    atomic_fadd(d_value + adr, mult(aval, bval));
                     break;
                 }
                 else if (d_check[adr] == -1) {
                     old = atomicCAS(d_check + adr, -1, key);
                     if (old == -1) {
-                        atomic_fadd(d_value + adr, aval * bval);
+                        atomic_fadd(d_value + adr, mult(aval, bval));
                         break;
                     }
                 }
