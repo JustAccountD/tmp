@@ -622,11 +622,6 @@ __global__ void set_row_nz_bin_each_gl(const int *d_arpt, const int *d_acol,
 }
 
 
-__constant__ int device_grammar_size;
-__constant__ unsigned short device_grammar_body[1000];
-__constant__ unsigned int device_grammar_tail[1000];
-
-
 __device__ __inline__ real mult(real a, real b) {
     a <<= 16;
     unsigned int conc = a | b;
