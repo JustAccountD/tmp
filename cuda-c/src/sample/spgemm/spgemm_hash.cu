@@ -111,7 +111,6 @@ int main(int argc, char **argv)
 //        printf("PROBLEM: %s\n", cudaGetErrorString(result));
 //    }
 //    printSMTH<<<1,1>>>();
-    setGR();
     cudaDeviceSynchronize();
     init_csr_matrix_from_file(&mat_a, argv[1]);
     init_csr_matrix_from_file(&mat_b, argv[1]);
