@@ -622,7 +622,7 @@ __global__ void set_row_nz_bin_each_gl(const int *d_arpt, const int *d_acol,
 }
 
 
-__device__ __inline__ real mult(real a, real b) {
+__device__ real mult(real a, real b) {
     unsigned int tmpA = a;
     unsigned int tmpB = b;
     tmpA <<= 16;
