@@ -631,15 +631,15 @@ void setGR(int grSize, unsigned short int * grBody, unsigned int * grTail) {
     unsigned short * global_device_grammar_body = 0;
     unsigned int * global_device_grammar_tail = 0;
 
-    cudaMalloc((void**)&global_device_grammar_body, grammar_size * sizeof(unsigned short));
-    cudaMalloc((void**)&global_device_grammar_tail, grammar_size * sizeof(unsigned int));
+    cudaMalloc((void**)&global_device_grammar_body, grSize * sizeof(unsigned short));
+    cudaMalloc((void**)&global_device_grammar_tail, grSize * sizeof(unsigned int));
 
-    cudaMemcpy(global_device_grammar_body, grammar_body, grammar_size * sizeof(unsigned short), cudaMemcpyHostToDevice);
-    cudaMemcpy(global_device_grammar_tail, grammar_tail, grammar_size * sizeof(unsigned int), cudaMemcpyHostToDevice);
+    cudaMemcpy(global_device_grammar_body, grBody, grSize * sizeof(unsigned short), cudaMemcpyHostToDevice);
+    cudaMemcpy(global_device_grammar_tail, grTail, grSize * sizeof(unsigned int), cudaMemcpyHostToDevice);
 
-    cudaMemcpyToSymbol(device_grammar_body, global_device_grammar_body, grammar_size * sizeof(unsigned short));
-    cudaMemcpyToSymbol(device_grammar_tail, global_device_grammar_tail, grammar_size * sizeof(unsigned int));
-    cudaError_t result = cudaMemcpyToSymbol(device_grammar_size, &grammar_size, sizeof(int));
+    cudaMemcpyToSymbol(device_grammar_body, global_device_grammar_body, grSize * sizeof(unsigned short));
+    cudaMemcpyToSymbol(device_grammar_tail, global_device_grammar_tail, grSize * sizeof(unsigned int));
+    cudaError_t result = cudaMemcpyToSymbol(device_grammar_size, &grSize, sizeof(int));
     if (result != cudaSuccess) {
         printf("PROBLEM: %s\n", cudaGetErrorString(result));
     }
