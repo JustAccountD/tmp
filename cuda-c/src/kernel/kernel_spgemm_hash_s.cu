@@ -626,16 +626,7 @@ __global__ void printSMTH() {
     printf("GRSIZE FROM MAIN %d\n", device_grammar_size);
 }
 
-void setGR() {
-    int grammar_size = 3;
-    unsigned short * grammar_body = (unsigned short *)calloc(grammar_size, sizeof(unsigned short));
-    grammar_body[0] = 0x1;
-    grammar_body[1] = 0x2;
-    grammar_body[2] = 0x4;
-    unsigned int * grammar_tail = (unsigned int *)calloc(grammar_size, sizeof(unsigned int));
-    grammar_tail[0] = 0x00110011;
-    grammar_tail[1] = 0x00100010;
-    grammar_tail[2] = 0x00000010;
+void setGR(int grSize, unsigned short int * grBody, unsigned int * grTail) {
     printSMTH<<<1,1>>>();
     unsigned short * global_device_grammar_body = 0;
     unsigned int * global_device_grammar_tail = 0;
@@ -1085,9 +1076,9 @@ void calculate_value_col_bin(int *d_arpt, int *d_acol, real *d_aval,
                              sfBIN *bin,
                              int M);
   
-void spgemm_kernel_hash(sfCSR *a, sfCSR *b, sfCSR *c)
+void spgemm_kernel_hash(sfCSR *a, sfCSR *b, sfCSR *c, int grSize, unsigned short int * grBody, unsigned int * grTail)
 {
-    setGR();
+    setGR(grSize, grBody, grTail);
     int M;
     sfBIN bin;
   

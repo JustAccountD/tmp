@@ -11,7 +11,7 @@
 
 #include <nsparse.h>
 
-void spgemm_csr(sfCSR *a, sfCSR *b, sfCSR *c)
+void spgemm_csr(sfCSR *a, sfCSR *b, sfCSR *c, int grSize, unsigned short int * grBody, unsigned int * grTail)
 {
 
     int i;
@@ -38,7 +38,7 @@ void spgemm_csr(sfCSR *a, sfCSR *b, sfCSR *c)
             release_csr(*c);
         }
         cudaEventRecord(event[0], 0);
-        spgemm_kernel_hash(a, b, c);
+        spgemm_kernel_hash(a, b, c, grSize, grBody, grTail);
         cudaEventRecord(event[1], 0);
         cudaThreadSynchronize();
         cudaEventElapsedTime(&msec, event[0], event[1]);
@@ -85,15 +85,15 @@ int main(int argc, char **argv)
     sfCSR mat_a, mat_b, mat_c;
   
     /* Set CSR reading from MM file */
-//    int grammar_size = 3;
-//    unsigned short * grammar_body = (unsigned short *)calloc(grammar_size, sizeof(unsigned short));
-//    grammar_body[0] = 0x1;
-//    grammar_body[1] = 0x2;
-//    grammar_body[2] = 0x4;
-//    unsigned int * grammar_tail = (unsigned int *)calloc(grammar_size, sizeof(unsigned int));
-//    grammar_tail[0] = 0x00110011;
-//    grammar_tail[1] = 0x00100010;
-//    grammar_tail[2] = 0x00000010;
+    int grammar_size = 3;
+    unsigned short * grammar_body = (unsigned short *)calloc(grammar_size, sizeof(unsigned short));
+    grammar_body[0] = 0x1;
+    grammar_body[1] = 0x2;
+    grammar_body[2] = 0x4;
+    unsigned int * grammar_tail = (unsigned int *)calloc(grammar_size, sizeof(unsigned int));
+    grammar_tail[0] = 0x00110011;
+    grammar_tail[1] = 0x00100010;
+    grammar_tail[2] = 0x00000010;
 //    printSMTH<<<1,1>>>();
 //    unsigned short * global_device_grammar_body = 0;
 //    unsigned int * global_device_grammar_tail = 0;
@@ -115,7 +115,7 @@ int main(int argc, char **argv)
     init_csr_matrix_from_file(&mat_a, argv[1]);
     init_csr_matrix_from_file(&mat_b, argv[1]);
   
-    spgemm_csr(&mat_a, &mat_b, &mat_c);
+    spgemm_csr(&mat_a, &mat_b, &mat_c, grammar_size, grammar_body, grammar_tail);
 
     release_cpu_csr(mat_a);
     release_cpu_csr(mat_b);
