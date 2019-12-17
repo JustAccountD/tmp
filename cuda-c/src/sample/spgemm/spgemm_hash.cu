@@ -104,7 +104,7 @@ int main(int argc, char **argv)
 
     cudaMemcpy(&device_grammar_body, grammar_body, grammar_size * sizeof(unsigned short), cudaMemcpyHostToDevice);
     cudaMemcpy(&device_grammar_tail, grammar_tail, grammar_size * sizeof(unsigned int), cudaMemcpyHostToDevice);
-    cudaMemcpy(&device_grammar_size, &grammar_size, sizeof(int));
+    cudaMemcpy(&device_grammar_size, &grammar_size, sizeof(int), cudaMemcpyHostToDevice);
 
 //    cudaMemcpyToSymbol(device_grammar_body, global_device_grammar_body, grammar_size * sizeof(unsigned short));
 //    cudaMemcpyToSymbol(device_grammar_tail, global_device_grammar_tail, grammar_size * sizeof(unsigned int));
