@@ -169,6 +169,7 @@ void spgemm_kernel_cu_csr(sfCSR *a, sfCSR *b, sfCSR *c,
 void spgemm_cu_csr(sfCSR *a, sfCSR *b, sfCSR *c);
 void check_spgemm_answer(sfCSR c, sfCSR ans);
 void spgemm_kernel_hash(sfCSR *a, sfCSR *b, sfCSR *c);
+void setGR();
 
 __constant__ int device_grammar_size = 2;
 __constant__ unsigned short device_grammar_body[1000] = {0x4, 0x8};
