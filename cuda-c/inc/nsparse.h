@@ -170,7 +170,7 @@ void spgemm_cu_csr(sfCSR *a, sfCSR *b, sfCSR *c);
 void check_spgemm_answer(sfCSR c, sfCSR ans);
 void spgemm_kernel_hash(sfCSR *a, sfCSR *b, sfCSR *c);
 
-void setPtrs(int grSz, unsigned short* grBody, unsigned int* grTail)
+void setPtrs(int grSz, unsigned short* grBody, unsigned int* grTail);
 
 __device__ int device_grammar_size = 2;
 __device__ unsigned short* device_grammar_body;//[1000] = {0x4, 0x8};
