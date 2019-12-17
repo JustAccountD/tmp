@@ -76,6 +76,10 @@ void spgemm_csr(sfCSR *a, sfCSR *b, sfCSR *c)
 
 }
 
+__device__ void printSMTH() {
+    printf("GRSIZE FROM MAIN %d", device_grammar_size);
+}
+
 /* Main Function */
 int main(int argc, char **argv)
 {
@@ -91,7 +95,7 @@ int main(int argc, char **argv)
     grammar_tail[0] = 0x00110011;
     grammar_tail[1] = 0x00100010;
     grammar_tail[2] = 0x00000010;
-
+    printSMTH<<<1,1>>>();
     unsigned short * global_device_grammar_body = 0;
     unsigned int * global_device_grammar_tail = 0;
 
@@ -107,7 +111,7 @@ int main(int argc, char **argv)
     if (result != cudaSuccess) {
         printf("PROBLEM: %s\n", cudaGetErrorString(result));
     }
-
+    printSMTH<<<1,1>>>();
 
     init_csr_matrix_from_file(&mat_a, argv[1]);
     init_csr_matrix_from_file(&mat_b, argv[1]);
