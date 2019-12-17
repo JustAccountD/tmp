@@ -621,10 +621,6 @@ __global__ void set_row_nz_bin_each_gl(const int *d_arpt, const int *d_acol,
     }
 }
 
-extern __constant__ int device_grammar_size;
-extern __constant__ unsigned short device_grammar_body[1000];
-extern __constant__ unsigned int device_grammar_tail[1000];
-
 
 __device__ real mult(real a, real b) {
     unsigned int tmpA = a;
