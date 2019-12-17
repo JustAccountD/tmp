@@ -76,9 +76,6 @@ void spgemm_csr(sfCSR *a, sfCSR *b, sfCSR *c)
 
 }
 
-extern __constant__ int device_grammar_size;
-extern __constant__ unsigned short device_grammar_body[1000];
-extern __constant__ unsigned int device_grammar_tail[1000];
 
 __global__ void printSMTH() {
     printf("GRSIZE FROM MAIN %d\n", device_grammar_size);
