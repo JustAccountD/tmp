@@ -40,6 +40,7 @@ void convert_file_csr(char *file_name,
     fgets(line, LINE_LENGTH_MAX, fp);
     if (strstr(line, "general")) {
         isUnsy = 1;
+        printf("UNSIMMETRICAL\n");
     }
     do {
         fgets(line, LINE_LENGTH_MAX, fp);
