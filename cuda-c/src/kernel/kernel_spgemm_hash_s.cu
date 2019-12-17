@@ -621,7 +621,7 @@ __global__ void set_row_nz_bin_each_gl(const int *d_arpt, const int *d_acol,
     }
 }
 
-__global__ real mult(real a, real b) {
+real mult(real a, real b) {
     return a * b;
 }
 
