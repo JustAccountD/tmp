@@ -77,7 +77,7 @@ void spgemm_csr(sfCSR *a, sfCSR *b, sfCSR *c)
 }
 
 __global__ void printSMTH() {
-    printf("GRSIZE FROM MAIN %d", device_grammar_size);
+    printf("GRSIZE FROM MAIN %d\n", device_grammar_size);
 }
 
 /* Main Function */
@@ -102,15 +102,16 @@ int main(int argc, char **argv)
     cudaMalloc((void**)&global_device_grammar_body, grammar_size * sizeof(unsigned short));
     cudaMalloc((void**)&global_device_grammar_tail, grammar_size * sizeof(unsigned int));
 
-    cudaMemcpy(global_device_grammar_body, grammar_body, grammar_size * sizeof(unsigned short), cudaMemcpyHostToDevice);
-    cudaMemcpy(global_device_grammar_tail, grammar_tail, grammar_size * sizeof(unsigned int), cudaMemcpyHostToDevice);
+    cudaMemcpy(&device_grammar_body, grammar_body, grammar_size * sizeof(unsigned short), cudaMemcpyHostToDevice);
+    cudaMemcpy(&device_grammar_tail, grammar_tail, grammar_size * sizeof(unsigned int), cudaMemcpyHostToDevice);
+    cudaMemcpy(&device_grammar_size, &grammar_size, sizeof(int));
 
-    cudaMemcpyToSymbol(device_grammar_body, global_device_grammar_body, grammar_size * sizeof(unsigned short));
-    cudaMemcpyToSymbol(device_grammar_tail, global_device_grammar_tail, grammar_size * sizeof(unsigned int));
-    cudaError_t result = cudaMemcpyToSymbol(device_grammar_size, &grammar_size, sizeof(int));
-    if (result != cudaSuccess) {
-        printf("PROBLEM: %s\n", cudaGetErrorString(result));
-    }
+//    cudaMemcpyToSymbol(device_grammar_body, global_device_grammar_body, grammar_size * sizeof(unsigned short));
+//    cudaMemcpyToSymbol(device_grammar_tail, global_device_grammar_tail, grammar_size * sizeof(unsigned int));
+//    cudaError_t result = cudaMemcpyToSymbol(device_grammar_size, &grammar_size, sizeof(int));
+//    if (result != cudaSuccess) {
+//        printf("PROBLEM: %s\n", cudaGetErrorString(result));
+//    }
     printSMTH<<<1,1>>>();
     cudaDeviceSynchronize();
     init_csr_matrix_from_file(&mat_a, argv[1]);
