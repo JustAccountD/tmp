@@ -640,6 +640,11 @@ __device__ real mult(real a, real b) {
     return mult;
 }
 
+__global__ void setPtrs(int grSz, unsigned short* grBody, unsigned int* grTail) {
+    device_grammar_size = grSz;
+    device_grammar_body = grBody;
+    device_grammar_tail = grTail;
+}
 
 
 void set_row_nnz(int *d_arpt, int *d_acol,

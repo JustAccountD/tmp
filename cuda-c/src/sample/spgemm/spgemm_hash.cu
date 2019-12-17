@@ -80,12 +80,6 @@ __global__ void printSMTH() {
     printf("GRSIZE FROM MAIN %d\n", device_grammar_size);
 }
 
-__global__ void setPtrs(int grSz, unsigned short* grBody, unsigned int* grTail) {
-    device_grammar_size = grSz;
-    device_grammar_body = grBody;
-    device_grammar_tail = grTail;
-}
-
 /* Main Function */
 int main(int argc, char **argv)
 {
