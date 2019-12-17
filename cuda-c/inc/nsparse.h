@@ -2,7 +2,7 @@
 
 #ifdef FLOAT
 #warning "EEE2"
-typedef unsigned int real;
+typedef unsigned short real;
 
 #elif defined DOUBLE
 #warning "EEE1"
