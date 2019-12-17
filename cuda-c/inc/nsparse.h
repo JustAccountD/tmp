@@ -170,9 +170,9 @@ void spgemm_cu_csr(sfCSR *a, sfCSR *b, sfCSR *c);
 void check_spgemm_answer(sfCSR c, sfCSR ans);
 void spgemm_kernel_hash(sfCSR *a, sfCSR *b, sfCSR *c);
 
-__constant__ int device_grammar_size = 3;
-__constant__ unsigned short device_grammar_body[1000] = {0x1,0x2, 0x4};
-__constant__ unsigned int device_grammar_tail[1000] = {0x00030003, 0x00100010, 0x00000010};
+__constant__ int device_grammar_size = 2;
+__constant__ unsigned short device_grammar_body[1000] = {0x1, 0x2};
+__constant__ unsigned int device_grammar_tail[1000] = {0x00030003, 0x00100010};
 
 
 
