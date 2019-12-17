@@ -623,8 +623,10 @@ __global__ void set_row_nz_bin_each_gl(const int *d_arpt, const int *d_acol,
 
 
 __device__ __inline__ real mult(real a, real b) {
-    a <<= 16;
-    unsigned int conc = a | b;
+    unsigned int tmpA = a;
+    unsigned int tmpB = b;
+    tmpA <<= 16;
+    unsigned int conc = tmpA | tmpB;
     real mult = 0;
 
     for (int i = 0; i < device_grammar_size; i++) {
