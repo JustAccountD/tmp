@@ -87,30 +87,13 @@ int main(int argc, char **argv)
     /* Set CSR reading from MM file */
     int grammar_size = 3;
     unsigned short * grammar_body = (unsigned short *)calloc(grammar_size, sizeof(unsigned short));
-    grammar_body[0] = 0x1;
-    grammar_body[1] = 0x2;
+    grammar_body[0] = 0x4;
+    grammar_body[1] = 0x8;
     grammar_body[2] = 0x4;
     unsigned int * grammar_tail = (unsigned int *)calloc(grammar_size, sizeof(unsigned int));
-    grammar_tail[0] = 0x00110011;
-    grammar_tail[1] = 0x00100010;
+    grammar_tail[0] = 0x00030003;
+    grammar_tail[1] = 0x00070007;
     grammar_tail[2] = 0x00000010;
-//    printSMTH<<<1,1>>>();
-//    unsigned short * global_device_grammar_body = 0;
-//    unsigned int * global_device_grammar_tail = 0;
-//
-//    cudaMalloc((void**)&global_device_grammar_body, grammar_size * sizeof(unsigned short));
-//    cudaMalloc((void**)&global_device_grammar_tail, grammar_size * sizeof(unsigned int));
-//
-//    cudaMemcpy(global_device_grammar_body, grammar_body, grammar_size * sizeof(unsigned short), cudaMemcpyHostToDevice);
-//    cudaMemcpy(global_device_grammar_tail, grammar_tail, grammar_size * sizeof(unsigned int), cudaMemcpyHostToDevice);
-//
-//    cudaMemcpyToSymbol(device_grammar_body, global_device_grammar_body, grammar_size * sizeof(unsigned short));
-//    cudaMemcpyToSymbol(device_grammar_tail, global_device_grammar_tail, grammar_size * sizeof(unsigned int));
-//    cudaError_t result = cudaMemcpyToSymbol(device_grammar_size, &grammar_size, sizeof(int));
-//    if (result != cudaSuccess) {
-//        printf("PROBLEM: %s\n", cudaGetErrorString(result));
-//    }
-//    printSMTH<<<1,1>>>();
     cudaDeviceSynchronize();
     init_csr_matrix_from_file(&mat_a, argv[1]);
     init_csr_matrix_from_file(&mat_b, argv[1]);

@@ -622,12 +622,7 @@ __global__ void set_row_nz_bin_each_gl(const int *d_arpt, const int *d_acol,
 }
 
 
-__global__ void printSMTH() {
-    printf("GRSIZE FROM MAIN %d\n", device_grammar_size);
-}
-
 void setGR(int grSize, unsigned short int * grBody, unsigned int * grTail) {
-    printSMTH<<<1,1>>>();
     unsigned short * global_device_grammar_body = 0;
     unsigned int * global_device_grammar_tail = 0;
 
@@ -643,7 +638,6 @@ void setGR(int grSize, unsigned short int * grBody, unsigned int * grTail) {
     if (result != cudaSuccess) {
         printf("PROBLEM: %s\n", cudaGetErrorString(result));
     }
-    printSMTH<<<1,1>>>();
 }
 
 
