@@ -83,11 +83,11 @@ int main(int argc, char **argv)
   
     /* Set CSR reading from MM file */
     int grammar_size = 3;
-    unsigned short * grammar_body = (unsigned short *)malloc(grammar_size, sizeof(unsigned short));
+    unsigned short * grammar_body = (unsigned short *)calloc(grammar_size, sizeof(unsigned short));
     grammar_body[0] = 0x1;
     grammar_body[1] = 0x2;
     grammar_body[2] = 0x4;
-    unsigned int * grammar_tail = (unsigned int *)malloc(grammar_size, sizeof(unsigned int));
+    unsigned int * grammar_tail = (unsigned int *)calloc(grammar_size, sizeof(unsigned int));
     grammar_tail[0] = 0x00110011;
     grammar_tail[1] = 0x00100010;
     grammar_tail[2] = 0x00000010;
