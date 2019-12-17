@@ -103,7 +103,10 @@ int main(int argc, char **argv)
 
     cudaMemcpyToSymbol(device_grammar_body, global_device_grammar_body, grammar_size * sizeof(unsigned short));
     cudaMemcpyToSymbol(device_grammar_tail, global_device_grammar_tail, grammar_size * sizeof(unsigned int));
-    cudaMemcpyToSymbol(device_grammar_size, &grammar_size, sizeof(int));
+    cudaError_t result = cudaMemcpyToSymbol(device_grammar_size, &grammar_size, sizeof(int));
+    if (result != cudaSuccess) {
+        printf("PROBLEM: %s\n", cudaGetErrorString(result));
+    }
 
 
     init_csr_matrix_from_file(&mat_a, argv[1]);
