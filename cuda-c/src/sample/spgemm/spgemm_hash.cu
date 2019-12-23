@@ -137,6 +137,7 @@ void spgemm_csr(sfCSR *a, sfCSR *b, sfCSR *c, int grSize, unsigned short int * g
 #ifdef FLOAT
             }
         else {
+            release_csr(*c);
             spgemm_kernel_hash(a, b, c, grSize, grBody, grTail, false);
         }
 
