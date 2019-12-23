@@ -131,12 +131,7 @@ void spgemm_csr(sfCSR *a, sfCSR *b, sfCSR *c, int grSize, unsigned short int * g
 #ifdef FLOAT
         bool noChange = 0;
         bool first = true;
-        int u = 0;
         while (!noChange) {
-            u++;
-            if (u > 3) {
-                break;
-            }
             printf("Ready for mult\n");
             if (first) {
                 first = false;
