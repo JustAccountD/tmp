@@ -143,12 +143,12 @@ void spgemm_csr(sfCSR *a, sfCSR *b, sfCSR *c, int grSize, unsigned short int * g
             release_csr(*c);
             cudaError_t result = cudaGetLastError();
             if (result != cudaSuccess) {
-                printf("PROBLEM: %s\n", cudaGetErrorString(result));
+                printf("PROBLEM1: %s\n", cudaGetErrorString(result));
             }
             getFlag<<<1, 1>>>(&noChange);
             result = cudaGetLastError();
             if (result != cudaSuccess) {
-                printf("PROBLEM: %s\n", cudaGetErrorString(result));
+                printf("PROBLEM2: %s\n", cudaGetErrorString(result));
             }
         }
 #endif

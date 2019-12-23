@@ -636,7 +636,7 @@ void setGR(int grSize, unsigned short int * grBody, unsigned int * grTail) {
     cudaMemcpyToSymbol(device_grammar_tail, global_device_grammar_tail, grSize * sizeof(unsigned int));
     cudaError_t result = cudaMemcpyToSymbol(device_grammar_size, &grSize, sizeof(int));
     if (result != cudaSuccess) {
-        printf("PROBLEM: %s\n", cudaGetErrorString(result));
+        printf("PROBLEM with grammar copying: %s\n", cudaGetErrorString(result));
     }
 }
 
