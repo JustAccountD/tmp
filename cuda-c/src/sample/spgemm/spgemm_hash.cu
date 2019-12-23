@@ -12,7 +12,32 @@
 #include <nsparse.h>
 
 #ifdef FLOAT
-// C = A | B
+void csr_copy(sfCSR * src, sfCSR * dst) {
+    release_csr(*dst);
+    dst->M = src->M;
+    dst->N = src->N;
+    dst->nnz = src->nnz;
+    dst->nnz_max = src->nnz_max;
+
+    checkCudaErrors(cudaMalloc((void **)&(dst->d_rpt), sizeof(int) * (dst->M + 1)));
+    checkCudaErrors(cudaMalloc((void **)&(dst->d_col), sizeof(int) * dst->nnz));
+    checkCudaErrors(cudaMalloc((void **)&(dst->d_val), sizeof(real) * dst->nnz));
+
+    checkCudaErrors(cudaMemcpy(dst->d_rpt, src->d_rpt, sizeof(int) * (src->M + 1), cudaMemcpyDeviceToDevice));
+    checkCudaErrors(cudaMemcpy(dst->d_col, src->d_col, sizeof(int) * src->nnz, cudaMemcpyDeviceToDevice));
+    checkCudaErrors(cudaMemcpy(dst->d_val, src->d_val, sizeof(real) * src->nnz, cudaMemcpyDeviceToDevice));
+}
+
+
+__device__ bool flagNoChange = true;
+
+
+__global__ void getFlag(bool * flag) {
+    *flag = flagNoChange;
+    flagNoChange = true;
+}
+
+// C = A | B and check if C == A (if they are equal flagNoChange will be false)
 // sz - amount of rows (we sum square matrix)
 __global__ void sumSparse(int sz, int * rrzA, real * valA, int * colA, int * rrzB, real * valB, int * colB, int * rrzC, real * valC, int * colC)
 {
@@ -24,18 +49,21 @@ __global__ void sumSparse(int sz, int * rrzA, real * valA, int * colA, int * rrz
     rrzC[0] = 0;
     for (i = 0; i < sz; i++) {
 
-        printf("In start of while: %d %d\n", colAcnt, colBcnt);
+        //printf("In start of while: %d %d\n", colAcnt, colBcnt);
         while (colAcnt < rrzA[i + 1] || colBcnt < rrzB[i + 1]) {
             newrrz++;
 
 
             // if both matrix are in game
             if (colAcnt < rrzA[i + 1] && colBcnt < rrzB[i + 1]) {
-                printf("Col nums: %d %d\n", colA[colAcnt], colB[colBcnt]);
+               // printf("Col nums: %d %d\n", colA[colAcnt], colB[colBcnt]);
                 if (colA[colAcnt] <= colB[colBcnt]) {
                     colC[colCcnt] = colA[colAcnt];
                     if (colA[colAcnt] == colB[colBcnt]) {
                         valC[colCcnt] = valA[colAcnt] | valB[colBcnt];
+                        if (valC[colCcnt] != valA[colAcnt]) {
+                            flagNoChange = false;
+                        }
                         colBcnt++;
                     } else {
                         valC[colCcnt] = valA[colAcnt];
@@ -45,6 +73,7 @@ __global__ void sumSparse(int sz, int * rrzA, real * valA, int * colA, int * rrz
                 } else {
                     colC[colCcnt] = colB[colBcnt];
                     valC[colCcnt] = valB[colBcnt];
+                    flagNoChange = false;
                     colCcnt++;
                     colBcnt++;
                 }
@@ -56,6 +85,7 @@ __global__ void sumSparse(int sz, int * rrzA, real * valA, int * colA, int * rrz
             } else {
                 colC[colCcnt] = colB[colBcnt];
                 valC[colCcnt] = valB[colBcnt];
+                flagNoChange = false;
                 colCcnt++;
                 colBcnt++;
             }
@@ -94,11 +124,19 @@ void spgemm_csr(sfCSR *a, sfCSR *b, sfCSR *c, int grSize, unsigned short int * g
             release_csr(*c);
         }
         cudaEventRecord(event[0], 0);
-        spgemm_kernel_hash(a, b, c, grSize, grBody, grTail);
 #ifdef FLOAT
-        checkCudaErrors(cudaMalloc((void **)&(b->d_col), sizeof(int) * (a->nnz + c->nnz)));
-        checkCudaErrors(cudaMalloc((void **)&(b->d_val), sizeof(real) * (a->nnz + c->nnz)));
-        sumSparse<<<1, 1>>>(a->M, a->d_rpt, a->d_val, a->d_col, c->d_rpt, c->d_val, c->d_col, b->d_rpt, b->d_val, b->d_col);
+        bool noChange = false;
+        while (!noChange) {
+#endif
+            spgemm_kernel_hash(a, b, c, grSize, grBody, grTail);
+#ifdef FLOAT
+            checkCudaErrors(cudaMalloc((void **)&(b->d_col), sizeof(int) * (a->nnz + c->nnz)));
+            checkCudaErrors(cudaMalloc((void **)&(b->d_val), sizeof(real) * (a->nnz + c->nnz)));
+            sumSparse<<<1, 1>>>(a->M, a->d_rpt, a->d_val, a->d_col, c->d_rpt, c->d_val, c->d_col, b->d_rpt, b->d_val, b->d_col);
+            csr_copy(b, a);
+            release_csr(*c);
+            getFlag(&noChange);
+        }
 #endif
         cudaEventRecord(event[1], 0);
         cudaThreadSynchronize();
