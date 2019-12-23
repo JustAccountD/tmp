@@ -52,31 +52,34 @@ __global__ void sumSparse(int sz, int * rrzA, real * valA, int * colA, int * rrz
             if (colAcnt < rrzA[i + 1] && colBcnt < rrzB[i + 1]) {
                // printf("Col nums: %d %d\n", colA[colAcnt], colB[colBcnt]);
                 if (colA[colAcnt] <= colB[colBcnt]) {
-                    colC[colCcnt] = colA[colAcnt];
-                    if (colA[colAcnt] == colB[colBcnt]) {
+                    if (colA[colAcnt] == colB[colBcnt] && (valA[colAcnt] != 0 || valB[colBcnt] != 0)) {
+                        colC[colCcnt] = colA[colAcnt];
                         valC[colCcnt] = valA[colAcnt] | valB[colBcnt];
                         if (valC[colCcnt] != valA[colAcnt]) {
                             flagNoChange = -valA[colAcnt];
                         }
                         colBcnt++;
-                    } else {
+                        colCcnt++;
+                        colAcnt++;
+                    } else if (valA[colAcnt] != 0) {
+                        colC[colCcnt] = colA[colAcnt];
                         valC[colCcnt] = valA[colAcnt];
+                        colCcnt++;
+                        colAcnt++;
                     }
-                    colCcnt++;
-                    colAcnt++;
-                } else {
+                } else if (valB[colBcnt] != 0) {
                     colC[colCcnt] = colB[colBcnt];
                     valC[colCcnt] = valB[colBcnt];
                     flagNoChange = 333;
                     colCcnt++;
                     colBcnt++;
                 }
-            } else if (colAcnt < rrzA[i + 1]) {
+            } else if (colAcnt < rrzA[i + 1] && valA[colAcnt] != 0) {
                 colC[colCcnt] = colA[colAcnt];
                 valC[colCcnt] = valA[colAcnt];
                 colCcnt++;
                 colAcnt++;
-            } else {
+            } else if (valB[colBcnt] != 0) {
                 colC[colCcnt] = colB[colBcnt];
                 valC[colCcnt] = valB[colBcnt];
                 flagNoChange = 444;
