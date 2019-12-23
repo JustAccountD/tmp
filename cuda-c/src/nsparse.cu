@@ -92,6 +92,8 @@ void convert_file_csr(char *file_name,
         }
     }
 
+
+    // Store matrix in CSR format
     /* Allocation of rpt, col, val */
     rpt_ = (int *)malloc(sizeof(int) * ((*M) + 1));
     col_ = (int *)malloc(sizeof(int) * (*nz));
@@ -100,13 +102,13 @@ void convert_file_csr(char *file_name,
     offset = 0;
     *nnz_max = 0;
     for (i = 0; i < (*M); i++) {
-        rpt_[i] = offset;
+        rpt_[i] = offset; // looks like we have amount of not null in rows before this row
         offset += nnz_num[i];
         if(*nnz_max < nnz_num[i]){
             *nnz_max = nnz_num[i];
         }
     }
-    rpt_[(*M)] = offset;
+    rpt_[(*M)] = offset; // amount of all not null
 
     each_row_index = (int *)malloc(sizeof(int) * (*M));
     for (i = 0; i < (*M); i++) {
