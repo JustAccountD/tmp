@@ -166,23 +166,32 @@ void spgemm_csr(sfCSR *a, sfCSR *b, sfCSR *c, int grSize, unsigned short int * g
         cudaThreadSynchronize();
         cudaEventElapsedTime(&msec, event[0], event[1]);
 
-//        if (i > 0) {
+#ifndef FLOAT
+        if (i > 0) {
+#endif
             ave_msec += msec;
-//        }
+#ifndef FLOAT
+        }
+#endif
     }
-    //ave_msec /= SPGEMM_TRI_NUM - 1;
+#ifndef FLOAT
+    ave_msec /= SPGEMM_TRI_NUM - 1;
+#endif
   
     flops = (float)(flop_count) / 1000 / 1000 / ave_msec;
   
     printf("SpGEMM using CSR format (Hash-based): %s, %f[GFLOPS], %f[ms]\n", a->matrix_name, flops, ave_msec);
 
-    // for test
+#ifdef FLOAT
     c = b;
+#endif
 
 
     csr_memcpyDtH(c);
+#ifndef FLOAT
     release_csr(*c);
-    
+#endif
+
     /* Check answer */
 #ifdef sfDEBUG
     sfCSR ans;
