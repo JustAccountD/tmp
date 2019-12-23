@@ -14,7 +14,7 @@
 
 // C = A | B
 // sz - amount of rows (we sum square matrix)
-__global__ void sumSparse(int sz, int * rrzA, int * valA, int * colA, int * rrzB, int * valB, int * colB, int * rrzC, int * valC, int * colC)
+__global__ void sumSparse(int sz, int * rrzA, real * valA, int * colA, int * rrzB, real * valB, int * colB, int * rrzC, real * valC, int * colC)
 {
     int colAcnt = 0;
     int colBcnt = 0;
