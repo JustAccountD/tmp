@@ -146,8 +146,8 @@ void spgemm_csr(sfCSR *a, sfCSR *b, sfCSR *c, int grSize, unsigned short int * g
         checkCudaErrors(cudaMalloc((void **)&(b->d_col), sizeof(int) * (a->nnz + c->nnz)));
         checkCudaErrors(cudaMalloc((void **)&(b->d_val), sizeof(real) * (a->nnz + c->nnz)));
         //sumSparse<<<1, 1>>>(a->M, a->d_rpt, a->d_val, a->d_col, c->d_rpt, c->d_val, c->d_col, b->d_rpt, b->d_val, b->d_col);
-        csr_copy(b, a);
-        csr_copy(a, b);
+        //csr_copy(b, a);
+        //csr_copy(a, b);
         release_csr(*c);
         cudaError_t result = cudaGetLastError();
         if (result != cudaSuccess) {
@@ -158,6 +158,7 @@ void spgemm_csr(sfCSR *a, sfCSR *b, sfCSR *c, int grSize, unsigned short int * g
         if (result != cudaSuccess) {
             printf("PROBLEM2: %s\n", cudaGetErrorString(result));
         }
+        cudaThreadSynchronize();
     }
 #endif
         cudaEventRecord(event[1], 0);
