@@ -58,7 +58,7 @@ __global__ void sumSparse(int sz, int * rrzA, real * valA, int * colA, int * rrz
                         if (valC[colCcnt] != valA[colAcnt]) {
                             flagNoChange = false;
                         } else {
-                            flagNoChange = -valA[colAcnt]
+                            flagNoChange = -valA[colAcnt];
                         }
                         colBcnt++;
                     } else {
