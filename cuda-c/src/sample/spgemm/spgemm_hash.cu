@@ -45,41 +45,48 @@ __global__ void sumSparse(int sz, int * rrzA, real * valA, int * colA, int * rrz
 
         //printf("In start of while: %d %d\n", colAcnt, colBcnt);
         while (colAcnt < rrzA[i + 1] || colBcnt < rrzB[i + 1]) {
-            newrrz++;
 
+            if (colAcnt < rrzA[i + 1] && valA[colAcnt] == 0) {
+                colAcnt++;
+                continue;
+            }
+
+            if (colBcnt < rrzB[i + 1] && valB[colBcnt] == 0) {
+                colBcnt++;
+                continue;
+            }
+
+            newrrz++;
 
             // if both matrix are in game
             if (colAcnt < rrzA[i + 1] && colBcnt < rrzB[i + 1]) {
                // printf("Col nums: %d %d\n", colA[colAcnt], colB[colBcnt]);
                 if (colA[colAcnt] <= colB[colBcnt]) {
-                    if (colA[colAcnt] == colB[colBcnt] && (valA[colAcnt] != 0 || valB[colBcnt] != 0)) {
-                        colC[colCcnt] = colA[colAcnt];
+                    colC[colCcnt] = colA[colAcnt];
+                    if (colA[colAcnt] == colB[colBcnt]) {
                         valC[colCcnt] = valA[colAcnt] | valB[colBcnt];
                         if (valC[colCcnt] != valA[colAcnt]) {
                             flagNoChange = -valA[colAcnt];
                         }
                         colBcnt++;
-                        colCcnt++;
-                        colAcnt++;
-                    } else if (valA[colAcnt] != 0) {
-                        colC[colCcnt] = colA[colAcnt];
+                    } else {
                         valC[colCcnt] = valA[colAcnt];
-                        colCcnt++;
-                        colAcnt++;
                     }
-                } else if (valB[colBcnt] != 0) {
+                    colCcnt++;
+                    colAcnt++;
+                } else {
                     colC[colCcnt] = colB[colBcnt];
                     valC[colCcnt] = valB[colBcnt];
                     flagNoChange = 333;
                     colCcnt++;
                     colBcnt++;
                 }
-            } else if (colAcnt < rrzA[i + 1] && valA[colAcnt] != 0) {
+            } else if (colAcnt < rrzA[i + 1]) {
                 colC[colCcnt] = colA[colAcnt];
                 valC[colCcnt] = valA[colAcnt];
                 colCcnt++;
                 colAcnt++;
-            } else if (valB[colBcnt] != 0) {
+            } else {
                 colC[colCcnt] = colB[colBcnt];
                 valC[colCcnt] = valB[colBcnt];
                 flagNoChange = 444;
