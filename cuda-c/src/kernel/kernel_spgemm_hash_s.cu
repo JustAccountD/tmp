@@ -1079,7 +1079,6 @@ void spgemm_kernel_hash(sfCSR *a, sfCSR *b, sfCSR *c, int grSize, unsigned short
     M = a->M;
     c->M = M;
     c->N = b->N;
-    printf("M: %d", M);
   
     /* Initialize bin */
     init_bin(&bin, M);
