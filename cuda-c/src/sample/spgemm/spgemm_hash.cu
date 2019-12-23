@@ -238,7 +238,9 @@ int main(int argc, char **argv)
 
     release_cpu_csr(mat_a);
     release_cpu_csr(mat_b);
+#ifndef FLOAT
     release_cpu_csr(mat_c);
+#endif
     
     return 0;
 }
