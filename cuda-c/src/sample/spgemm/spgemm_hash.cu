@@ -146,7 +146,7 @@ void spgemm_csr(sfCSR *a, sfCSR *b, sfCSR *c, int grSize, unsigned short int * g
             ave_msec += msec;
         }
     }
-    ave_msec /= SPGEMM_TRI_NUM - 1;
+    //ave_msec /= SPGEMM_TRI_NUM - 1;
   
     flops = (float)(flop_count) / 1000 / 1000 / ave_msec;
   
