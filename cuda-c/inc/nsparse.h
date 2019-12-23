@@ -26,7 +26,7 @@ typedef double real;
 #define TEST_NUM 2
 
 /* Number of SpGEMM Execution for Evaluation or Test */
-#define SPGEMM_TRI_NUM 1
+#define SPGEMM_TRI_NUM 2
 
 /* Define 2 related */
 #define sfFLT_MAX 1000000000

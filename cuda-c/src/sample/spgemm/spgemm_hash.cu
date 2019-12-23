@@ -135,7 +135,7 @@ void spgemm_csr(sfCSR *a, sfCSR *b, sfCSR *c, int grSize, unsigned short int * g
             sumSparse<<<1, 1>>>(a->M, a->d_rpt, a->d_val, a->d_col, c->d_rpt, c->d_val, c->d_col, b->d_rpt, b->d_val, b->d_col);
             csr_copy(b, a);
             release_csr(*c);
-            getFlag(&noChange);
+            getFlag<<<1, 1>>>(&noChange);
         }
 #endif
         cudaEventRecord(event[1], 0);
