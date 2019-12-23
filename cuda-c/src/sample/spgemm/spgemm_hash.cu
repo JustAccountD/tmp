@@ -34,6 +34,7 @@ __device__ bool flagNoChange = true;
 
 __global__ void getFlag(bool * flag) {
     *flag = flagNoChange;
+    printf("FLAG: %d", *flag);
     flagNoChange = true;
 }
 
