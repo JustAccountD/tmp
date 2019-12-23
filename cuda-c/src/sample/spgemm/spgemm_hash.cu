@@ -34,6 +34,7 @@ __device__ bool flagNoChange = true;
 // sz - amount of rows (we sum square matrix)
 __global__ void sumSparse(int sz, int * rrzA, real * valA, int * colA, int * rrzB, real * valB, int * colB, int * rrzC, real * valC, int * colC)
 {
+    flagNoChange = true;
     int colAcnt = 0;
     int colBcnt = 0;
     int colCcnt = 0;
