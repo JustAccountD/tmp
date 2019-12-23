@@ -28,19 +28,9 @@ void csr_copy(sfCSR * src, sfCSR * dst) {
     checkCudaErrors(cudaMemcpy(dst->d_val, src->d_val, sizeof(real) * src->nnz, cudaMemcpyDeviceToDevice));
 }
 
-
-__device__ bool flagNoChange = false;
-
-
-__global__ void getFlag(bool * flag) {
-    *flag = flagNoChange;
-    printf("FLAG: %d\n", *flag);
-    flagNoChange = true;
-}
-
 // C = A | B and check if C == A (if they are equal flagNoChange will be false)
 // sz - amount of rows (we sum square matrix)
-__global__ void sumSparse(int sz, int * rrzA, real * valA, int * colA, int * rrzB, real * valB, int * colB, int * rrzC, real * valC, int * colC)
+__global__ void sumSparse(int sz, int * rrzA, real * valA, int * colA, int * rrzB, real * valB, int * colB, int * rrzC, real * valC, int * colC, bool * flagNoChange)
 {
     int colAcnt = 0;
     int colBcnt = 0;
@@ -63,7 +53,7 @@ __global__ void sumSparse(int sz, int * rrzA, real * valA, int * colA, int * rrz
                     if (colA[colAcnt] == colB[colBcnt]) {
                         valC[colCcnt] = valA[colAcnt] | valB[colBcnt];
                         if (valC[colCcnt] != valA[colAcnt]) {
-                            flagNoChange = false;
+                            *flagNoChange = false;
                         }
                         colBcnt++;
                     } else {
@@ -74,7 +64,7 @@ __global__ void sumSparse(int sz, int * rrzA, real * valA, int * colA, int * rrz
                 } else {
                     colC[colCcnt] = colB[colBcnt];
                     valC[colCcnt] = valB[colBcnt];
-                    flagNoChange = false;
+                    *flagNoChange = false;
                     colCcnt++;
                     colBcnt++;
                 }
@@ -86,7 +76,7 @@ __global__ void sumSparse(int sz, int * rrzA, real * valA, int * colA, int * rrz
             } else {
                 colC[colCcnt] = colB[colBcnt];
                 valC[colCcnt] = valB[colBcnt];
-                flagNoChange = false;
+                *flagNoChange = false;
                 colCcnt++;
                 colBcnt++;
             }
@@ -129,6 +119,7 @@ void spgemm_csr(sfCSR *a, sfCSR *b, sfCSR *c, int grSize, unsigned short int * g
         bool noChange = false;
         bool first = true;
         while (!noChange) {
+            noChange = true;
             printf("Ready for mult\n");
             if (first) {
                 first = false;
@@ -137,7 +128,6 @@ void spgemm_csr(sfCSR *a, sfCSR *b, sfCSR *c, int grSize, unsigned short int * g
 #ifdef FLOAT
             }
             else {
-                noChange = true;
                 release_csr(*c);
                 spgemm_kernel_hash(a, b, c, grSize, grBody, grTail, false);
             }
@@ -147,7 +137,7 @@ void spgemm_csr(sfCSR *a, sfCSR *b, sfCSR *c, int grSize, unsigned short int * g
             cudaFree(b->d_val);
             checkCudaErrors(cudaMalloc((void **)&(b->d_col), sizeof(int) * (a->nnz + c->nnz)));
             checkCudaErrors(cudaMalloc((void **)&(b->d_val), sizeof(real) * (a->nnz + c->nnz)));
-            sumSparse<<<1, 1>>>(a->M, a->d_rpt, a->d_val, a->d_col, c->d_rpt, c->d_val, c->d_col, b->d_rpt, b->d_val, b->d_col);
+            sumSparse<<<1, 1>>>(a->M, a->d_rpt, a->d_val, a->d_col, c->d_rpt, c->d_val, c->d_col, b->d_rpt, b->d_val, b->d_col, &noChange);
             csr_copy(b, a);
             csr_copy(a, b);
             cudaError_t result = cudaGetLastError();
