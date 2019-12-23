@@ -131,6 +131,7 @@ void spgemm_csr(sfCSR *a, sfCSR *b, sfCSR *c, int grSize, unsigned short int * g
         while (!noChange) {
             printf("Ready for mult\n");
             if (first) {
+                first = false;
 #endif
                 spgemm_kernel_hash(a, b, c, grSize, grBody, grTail, true);
 #ifdef FLOAT
