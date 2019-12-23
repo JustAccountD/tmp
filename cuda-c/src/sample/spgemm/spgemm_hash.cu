@@ -146,7 +146,8 @@ void spgemm_csr(sfCSR *a, sfCSR *b, sfCSR *c, int grSize, unsigned short int * g
             if (result != cudaSuccess) {
                 printf("PROBLEM1: %s\n", cudaGetErrorString(result));
             }
-            cudaMemcpy(&noChange, &flagNoChange, sizeof(bool), cudaMemcpyDeviceToHost);
+            cudaMemcpyFromSymbol(&noChange, flagNoChange, sizeof(bool), 0, cudaMemcpyDeviceToHost);
+            //cudaMemcpy(&noChange, &flagNoChange, sizeof(bool), cudaMemcpyDeviceToHost);
             result = cudaGetLastError();
             if (result != cudaSuccess) {
                 printf("PROBLEM2: %s\n", cudaGetErrorString(result));
