@@ -126,15 +126,15 @@ __device__ __inline__ void atomic_fadd(real *adr, real val)
 #ifdef FLOAT
 #ifdef INT16
     unsigned short int *address_ull = (unsigned short int *)(adr);
-    printf("BEFORE: %d for %p\n", *address_ull, address_ull);
-    printf("VAL: %d for %p\n", val, address_ull);
+    //printf("BEFORE: %d for %p\n", *address_ull, address_ull);
+    //printf("VAL: %d for %p\n", val, address_ull);
     real input = val;
     atomicAddShort(adr, val);
-    printf("RES: %d for %p\n", *address_ull, address_ull);
+    //printf("RES: %d for %p\n", *address_ull, address_ull);
 #elif defined INT32
     unsigned int *address_ull = (unsigned int *)(adr);
-    printf("BEFORE: %d for %p\n", *address_ull, address_ull);
-    printf("VAL: %d for %p\n", val, address_ull);
+    //printf("BEFORE: %d for %p\n", *address_ull, address_ull);
+    //printf("VAL: %d for %p\n", val, address_ull);
     unsigned int old_val = *address_ull;
     unsigned int assumed;
     real input = val;
@@ -142,7 +142,7 @@ __device__ __inline__ void atomic_fadd(real *adr, real val)
         assumed = old_val;
         old_val = atomicCAS(address_ull, assumed, input + assumed);
     } while (assumed != old_val);
-    printf("RES: %d for %p\n", *address_ull, address_ull);
+    //printf("RES: %d for %p\n", *address_ull, address_ull);
 #endif
 #elif defined DOUBLE
     unsigned long long int *address_ull = (unsigned long long int *)(adr);

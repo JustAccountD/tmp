@@ -1023,7 +1023,6 @@ void calculate_value_col_bin(int *d_arpt, int *d_acol, real *d_aval,
   
 void spgemm_kernel_hash(sfCSR *a, sfCSR *b, sfCSR *c, int grSize, unsigned short int * grBody, unsigned int * grTail, bool setGRflag)
 {
-    printf("IN TEMPLATE\n");
     int M;
     sfBIN bin;
   

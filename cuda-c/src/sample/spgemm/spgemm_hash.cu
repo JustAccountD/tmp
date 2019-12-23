@@ -121,7 +121,6 @@ void spgemm_csr(sfCSR *a, sfCSR *b, sfCSR *c, int grSize, unsigned short int * g
         bool noChange = false;
         bool first = true;
         while (!noChange) {
-            noChange = true;
             printf("Ready for mult\n");
             if (first) {
                 first = false;
@@ -147,6 +146,7 @@ void spgemm_csr(sfCSR *a, sfCSR *b, sfCSR *c, int grSize, unsigned short int * g
                 printf("PROBLEM1: %s\n", cudaGetErrorString(result));
             }
             cudaMemcpyFromSymbol(&noChange, flagNoChange, sizeof(bool), 0, cudaMemcpyDeviceToHost);
+            printf("FLAG: %d", noChange);
             //cudaMemcpy(&noChange, &flagNoChange, sizeof(bool), cudaMemcpyDeviceToHost);
             result = cudaGetLastError();
             if (result != cudaSuccess) {

@@ -647,11 +647,11 @@ __device__ real mult(real a, real b) {
     tmpA <<= 16;
     unsigned int conc = tmpA | tmpB;
     real mult = 0;
-    printf("In Mult: A: %x B: %x\n", tmpA, tmpB);
-    printf("GRSIZE: %d\n", device_grammar_size);
+    //printf("In Mult: A: %x B: %x\n", tmpA, tmpB);
+    //printf("GRSIZE: %d\n", device_grammar_size);
 
     for (int i = 0; i < device_grammar_size; i++) {
-        printf("Compare: grTail: %x Conc: %x\n", device_grammar_tail[i], conc);
+        //printf("Compare: grTail: %x Conc: %x\n", device_grammar_tail[i], conc);
         if ((device_grammar_tail[i] & conc) == device_grammar_tail[i]) {
             mult |= device_grammar_body[i];
         }
