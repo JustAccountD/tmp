@@ -88,7 +88,7 @@ __global__ void sumSparse(int sz, int * rrzA, real * valA, int * colA, int * rrz
             } else {
                 colC[colCcnt] = colB[colBcnt];
                 valC[colCcnt] = valB[colBcnt];
-                flagNoChange = 444;
+                flagNoChange = 444 + valB[colBcnt];
                 colCcnt++;
                 colBcnt++;
             }
@@ -131,7 +131,7 @@ void spgemm_csr(sfCSR *a, sfCSR *b, sfCSR *c, int grSize, unsigned short int * g
         int noChange = 0;
         bool first = true;
         int u = 0;
-        while (!noChange) {
+        while (/*!noChange*/true) {
             u++;
             if (u > 3) {
                 break;
