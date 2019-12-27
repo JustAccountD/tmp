@@ -232,7 +232,8 @@ int main(int argc, char **argv)
     unsigned short * grammar_body = (unsigned short *)calloc(grammar_size, sizeof(unsigned short));
 //    grammar_body[0] = 0x1;
     grammar_body[0] = 0x4;
-    grammar_body[1] = 0x1;
+//    grammar_body[1] = 0x1;
+    grammar_body[1] = 0x8;
     grammar_body[2] = 0x1;
     grammar_body[3] = 0x1;
     grammar_body[4] = 0x4;
