@@ -28,7 +28,7 @@ void csr_copy(sfCSR * src, sfCSR * dst) {
     checkCudaErrors(cudaMemcpy(dst->d_val, src->d_val, sizeof(real) * src->nnz, cudaMemcpyDeviceToDevice));
 }
 
-__device__ bool flagNoChange = true;
+__device__ int flagNoChange = true;
 
 // C = A | B and check if C == A (if they are equal flagNoChange will be false)
 // sz - amount of rows (we sum square matrix)
@@ -60,13 +60,12 @@ __global__ void sumSparse(int sz, int * rrzA, real * valA, int * colA, int * rrz
 
             // if both matrix are in game
             if (colAcnt < rrzA[i + 1] && colBcnt < rrzB[i + 1]) {
-               // printf("Col nums: %d %d\n", colA[colAcnt], colB[colBcnt]);
                 if (colA[colAcnt] <= colB[colBcnt]) {
                     colC[colCcnt] = colA[colAcnt];
                     if (colA[colAcnt] == colB[colBcnt]) {
                         valC[colCcnt] = valA[colAcnt] | valB[colBcnt];
                         if (valC[colCcnt] != valA[colAcnt]) {
-                            flagNoChange = false;
+                            flagNoChange = -valA[colAcnt];
                         }
                         colBcnt++;
                     } else {
@@ -77,7 +76,7 @@ __global__ void sumSparse(int sz, int * rrzA, real * valA, int * colA, int * rrz
                 } else {
                     colC[colCcnt] = colB[colBcnt];
                     valC[colCcnt] = valB[colBcnt];
-                    flagNoChange = false;
+                    flagNoChange = 555;
                     colCcnt++;
                     colBcnt++;
                 }
@@ -89,7 +88,7 @@ __global__ void sumSparse(int sz, int * rrzA, real * valA, int * colA, int * rrz
             } else {
                 colC[colCcnt] = colB[colBcnt];
                 valC[colCcnt] = valB[colBcnt];
-                flagNoChange = false;
+                flagNoChange = 444;
                 colCcnt++;
                 colBcnt++;
             }
@@ -129,9 +128,14 @@ void spgemm_csr(sfCSR *a, sfCSR *b, sfCSR *c, int grSize, unsigned short int * g
         }
         cudaEventRecord(event[0], 0);
 #ifdef FLOAT
-        bool noChange = 0;
+        int noChange = 0;
         bool first = true;
+        int u = 0;
         while (!noChange) {
+            u++;
+            if (u > 3) {
+                break;
+            }
             printf("Ready for mult\n");
             if (first) {
                 first = false;
@@ -156,7 +160,8 @@ void spgemm_csr(sfCSR *a, sfCSR *b, sfCSR *c, int grSize, unsigned short int * g
             if (result != cudaSuccess) {
                 printf("PROBLEM1: %s\n", cudaGetErrorString(result));
             }
-            cudaMemcpyFromSymbol(&noChange, flagNoChange, sizeof(bool), 0, cudaMemcpyDeviceToHost);
+            cudaMemcpyFromSymbol(&noChange, flagNoChange, sizeof(int), 0, cudaMemcpyDeviceToHost);
+            printf("FLAG: %d\n", noChange)
             result = cudaGetLastError();
             if (result != cudaSuccess) {
                 printf("PROBLEM2: %s\n", cudaGetErrorString(result));
