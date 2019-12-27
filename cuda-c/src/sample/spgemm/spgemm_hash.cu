@@ -231,9 +231,9 @@ int main(int argc, char **argv)
     int grammar_size = 6;
     unsigned short * grammar_body = (unsigned short *)calloc(grammar_size, sizeof(unsigned short));
 //    grammar_body[0] = 0x1;
-    grammar_body[0] = 0x4;
+    grammar_body[0] = 0x8;
 //    grammar_body[1] = 0x1;
-    grammar_body[1] = 0x8;
+    grammar_body[1] = 0x16;
     grammar_body[2] = 0x1;
     grammar_body[3] = 0x1;
     grammar_body[4] = 0x4;
@@ -242,7 +242,7 @@ int main(int argc, char **argv)
 //    grammar_tail[0] = 0x00020004;
 //    grammar_tail[1] = 0x00080010;
     grammar_tail[0] = 0x00030003;
-    grammar_tail[1] = 0x00040004;
+    grammar_tail[1] = 0x00080008;
     grammar_tail[2] = 0x00020020;
     grammar_tail[3] = 0x00080040;
     grammar_tail[4] = 0x00010020;
