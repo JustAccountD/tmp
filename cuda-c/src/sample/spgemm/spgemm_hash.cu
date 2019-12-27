@@ -202,13 +202,15 @@ void spgemm_csr(sfCSR *a, sfCSR *b, sfCSR *c, int grSize, unsigned short int * g
 
 
     csr_memcpyDtH(c);
-    int sumAmount = 0;
-    for (int t = 0; t < c->nnz; t++) {
+#ifdef FLOAT
+    int t, sumAmount = 0;
+    for (t = 0; t < c->nnz; t++) {
         if ((c->val[t] & 0x1) == 0x1) {
             sumAmount++;
         }
     }
     printf("SumAmount: %d\n", sumAmount);
+#endif
 #ifndef FLOAT
     release_csr(*c);
 #endif
