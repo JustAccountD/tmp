@@ -29,43 +29,44 @@ void csr_copy(sfCSR * src, sfCSR * dst) {
 }
 
 __device__ int flagNoChange = true;
+__device__ int nnzSum = 0;
 
 // C = A | B and check if C == A (if they are equal flagNoChange will be false)
 // sz - amount of rows (we sum square matrix)
-__global__ void sumSparse(int sz, int * rrzA, real * valA, int * colA, int * rrzB, real * valB, int * colB, int * rrzC, real * valC, int * colC)
+__global__ void sumSparse(int sz, int * rptA, real * valA, int * colA, int * rptB, real * valB, int * colB, int * rptC, real * valC, int * colC)
 {
     flagNoChange = true;
     int colAcnt = 0;
     int colBcnt = 0;
     int colCcnt = 0;
     int i;
-    int newrrz = 0;
-    rrzC[0] = 0;
+    int newrpt = 0;
+    rptC[0] = 0;
     for (i = 0; i < sz; i++) {
 
         //printf("In start of while: %d %d\n", colAcnt, colBcnt);
-        while (colAcnt < rrzA[i + 1] || colBcnt < rrzB[i + 1]) {
+        while (colAcnt < rptA[i + 1] || colBcnt < rptB[i + 1]) {
 
-            if (colAcnt < rrzA[i + 1] && valA[colAcnt] == 0) {
+            if (colAcnt < rptA[i + 1] && valA[colAcnt] == 0) {
                 colAcnt++;
                 continue;
             }
 
-            if (colBcnt < rrzB[i + 1] && valB[colBcnt] == 0) {
+            if (colBcnt < rptB[i + 1] && valB[colBcnt] == 0) {
                 colBcnt++;
                 continue;
             }
 
-            newrrz++;
+            newrpt++;
 
             // if both matrix are in game
-            if (colAcnt < rrzA[i + 1] && colBcnt < rrzB[i + 1]) {
+            if (colAcnt < rptA[i + 1] && colBcnt < rptB[i + 1]) {
                 if (colA[colAcnt] <= colB[colBcnt]) {
                     colC[colCcnt] = colA[colAcnt];
                     if (colA[colAcnt] == colB[colBcnt]) {
                         valC[colCcnt] = valA[colAcnt] | valB[colBcnt];
                         if (valC[colCcnt] != valA[colAcnt]) {
-                            flagNoChange = -valB[colAcnt];
+                            flagNoChange = false;
                         }
                         colBcnt++;
                     } else {
@@ -76,11 +77,11 @@ __global__ void sumSparse(int sz, int * rrzA, real * valA, int * colA, int * rrz
                 } else {
                     colC[colCcnt] = colB[colBcnt];
                     valC[colCcnt] = valB[colBcnt];
-                    flagNoChange = 555;
+                    flagNoChange = false;
                     colCcnt++;
                     colBcnt++;
                 }
-            } else if (colAcnt < rrzA[i + 1]) {
+            } else if (colAcnt < rptA[i + 1]) {
                 colC[colCcnt] = colA[colAcnt];
                 valC[colCcnt] = valA[colAcnt];
                 colCcnt++;
@@ -88,13 +89,14 @@ __global__ void sumSparse(int sz, int * rrzA, real * valA, int * colA, int * rrz
             } else {
                 colC[colCcnt] = colB[colBcnt];
                 valC[colCcnt] = valB[colBcnt];
-                flagNoChange = 444 + valB[colBcnt];
+                flagNoChange = false;
                 colCcnt++;
                 colBcnt++;
             }
         }
 
-        rrzC[i + 1] = newrrz;
+        rptC[i + 1] = newrpt;
+        nnzSum = newrpt;
     }
 }
 #endif
@@ -130,8 +132,9 @@ void spgemm_csr(sfCSR *a, sfCSR *b, sfCSR *c, int grSize, unsigned short int * g
 #ifdef FLOAT
         int noChange = 0;
         bool first = true;
+        int nnzS = 0;
         int u = 0;
-        while (/*!noChange*/true) {
+        while (!noChange) {
             u++;
             if (u > 4) {
                 break;
@@ -154,12 +157,12 @@ void spgemm_csr(sfCSR *a, sfCSR *b, sfCSR *c, int grSize, unsigned short int * g
             checkCudaErrors(cudaMalloc((void **)&(b->d_col), sizeof(int) * (a->nnz + c->nnz)));
             checkCudaErrors(cudaMalloc((void **)&(b->d_val), sizeof(real) * (a->nnz + c->nnz)));
             sumSparse<<<1, 1>>>(a->M, a->d_rpt, a->d_val, a->d_col, c->d_rpt, c->d_val, c->d_col, b->d_rpt, b->d_val, b->d_col);
-            csr_memcpyDtH(b);
-            b->nnz = b->rpt[4];
+            cudaMemcpyFromSymbol(&nnzS, nnzSum, sizeof(int), 0, cudaMemcpyDeviceToHost);
+            b->nnz = nnzS;
             csr_copy(b, a);
             csr_copy(a, b);
 
-            printf("NNZ of sum: %d RPT last of sum: %d\n", b->nnz, b->rpt[4]);
+            //printf("NNZ of sum: %d RPT last of sum: %d\n", b->nnz, b->rpt[4]);
             cudaError_t result = cudaGetLastError();
             if (result != cudaSuccess) {
                 printf("PROBLEM1: %s\n", cudaGetErrorString(result));
@@ -199,6 +202,13 @@ void spgemm_csr(sfCSR *a, sfCSR *b, sfCSR *c, int grSize, unsigned short int * g
 
 
     csr_memcpyDtH(c);
+    int sumAmount = 0;
+    for (int t = 0; t < c->nnz; t++) {
+        if ((c->val[t] & 0x1) == 0x1) {
+            sumAmount++;
+        }
+    }
+    printf("SumAmount: %d\n", sumAmount);
 #ifndef FLOAT
     release_csr(*c);
 #endif
