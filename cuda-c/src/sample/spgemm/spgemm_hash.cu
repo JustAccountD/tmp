@@ -133,7 +133,7 @@ void spgemm_csr(sfCSR *a, sfCSR *b, sfCSR *c, int grSize, unsigned short int * g
         int u = 0;
         while (/*!noChange*/true) {
             u++;
-            if (u > 3) {
+            if (u > 4) {
                 break;
             }
             printf("Ready for mult\n");
@@ -228,25 +228,25 @@ int main(int argc, char **argv)
     sfCSR mat_a, mat_b, mat_c;
   
     /* Set CSR reading from MM file */
-    int grammar_size = 6;
+    int grammar_size = 2;
     unsigned short * grammar_body = (unsigned short *)calloc(grammar_size, sizeof(unsigned short));
 //    grammar_body[0] = 0x1;
-    grammar_body[0] = 0x8;
+    grammar_body[0] = 0x4;
 //    grammar_body[1] = 0x1;
-    grammar_body[1] = 0xf;
-    grammar_body[2] = 0x1;
-    grammar_body[3] = 0x1;
-    grammar_body[4] = 0x4;
-    grammar_body[5] = 0x10;
+    grammar_body[1] = 0x8;
+//    grammar_body[2] = 0x1;
+//    grammar_body[3] = 0x1;
+//    grammar_body[4] = 0x4;
+//    grammar_body[5] = 0x10;
     unsigned int * grammar_tail = (unsigned int *)calloc(grammar_size, sizeof(unsigned int));
 //    grammar_tail[0] = 0x00020004;
 //    grammar_tail[1] = 0x00080010;
     grammar_tail[0] = 0x00030003;
-    grammar_tail[1] = 0x00080008;
-    grammar_tail[2] = 0x00020020;
-    grammar_tail[3] = 0x00080040;
-    grammar_tail[4] = 0x00010020;
-    grammar_tail[5] = 0x00010040;
+    grammar_tail[1] = 0x00040004;
+//    grammar_tail[2] = 0x00020020;
+//    grammar_tail[3] = 0x00080040;
+//    grammar_tail[4] = 0x00010020;
+//    grammar_tail[5] = 0x00010040;
     cudaDeviceSynchronize();
     init_csr_matrix_from_file(&mat_a, argv[1]);
     init_csr_matrix_from_file(&mat_b, argv[1]);
