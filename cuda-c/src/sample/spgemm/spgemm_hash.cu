@@ -233,7 +233,7 @@ int main(int argc, char **argv)
 //    grammar_body[0] = 0x1;
     grammar_body[0] = 0x8;
 //    grammar_body[1] = 0x1;
-    grammar_body[1] = 0x16;
+    grammar_body[1] = 0xf;
     grammar_body[2] = 0x1;
     grammar_body[3] = 0x1;
     grammar_body[4] = 0x4;
