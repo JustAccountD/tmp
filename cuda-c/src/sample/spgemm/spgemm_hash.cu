@@ -318,9 +318,9 @@ void load_graph(const std::string & graph_filename, sfCSR * matrix) {
     matrix->nnz = 0;
     matrix->M = vertices_count;
     matrix->N = vertices_count;
-    col_coo = (int *)malloc(sizeof(int) * edges.size());
-    row_coo = (int *)malloc(sizeof(int) * edges.size());
-    val_coo = (real *)malloc(sizeof(real) * edges.size());
+    int * col_coo = (int *)malloc(sizeof(int) * edges.size());
+    int * row_coo = (int *)malloc(sizeof(int) * edges.size());
+    real * val_coo = (real *)malloc(sizeof(real) * edges.size());
     int i = 0;
 
     for (auto & edge : edges) {
@@ -340,7 +340,8 @@ void load_graph(const std::string & graph_filename, sfCSR * matrix) {
 
 
     /* Count the number of non-zero in each row */
-    nnz_num = (int *)malloc(sizeof(int) * matrix->M);
+    int num = matrix->N;
+    int * nnz_num = (int *)malloc(sizeof(int) * matrix->M);
     for (i = 0; i < matrix->M; i++) {
         nnz_num[i] = 0;
     }
@@ -350,11 +351,11 @@ void load_graph(const std::string & graph_filename, sfCSR * matrix) {
 
     // Store matrix in CSR format
     /* Allocation of rpt, col, val */
-    rpt_ = (int *)malloc(sizeof(int) * (matrix->M + 1));
-    col_ = (int *)malloc(sizeof(int) * matrix->nnz);
-    val_ = (real *)malloc(sizeof(real) * matrix->nnz);
+    int * rpt_ = (int *)malloc(sizeof(int) * (matrix->M + 1));
+    int * col_ = (int *)malloc(sizeof(int) * matrix->nnz);
+    real * val_ = (real *)malloc(sizeof(real) * matrix->nnz);
 
-    offset = 0;
+    int offset = 0;
     matrix->nnz_max = 0;
     for (i = 0; i < matrix->M; i++) {
         rpt_[i] = offset; // looks like we have amount of not null in rows before this row
