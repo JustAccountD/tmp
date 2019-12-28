@@ -425,6 +425,7 @@ int main(int argc, char **argv)
     load_graph(argv[2], &mat_a);
     printf("Graph loaded\n");
     load_graph(argv[2], &mat_b);
+    printf("NNZ_A: %d, NNZ_B: %d\n", mat_a.nnz, mat_b.nnz);
 #endif
     spgemm_csr(&mat_a, &mat_b, &mat_c, grammar_size, grammar_body, grammar_tail);
 
