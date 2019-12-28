@@ -247,12 +247,12 @@ void spgemm_csr(sfCSR *a, sfCSR *b, sfCSR *c, int grSize, unsigned short int * g
 
 #ifdef FLOAT
 unsigned char toBoolVector(unsigned int number) {
-    return ((real)0x1) << number;
+    return ((unsigned short)0x1) << number;
 }
 
 std::unordered_map<std::string, std::vector<int> > terminal_to_nonterminals;
 
-int load_grammar(const std::string & grammar_filename, real * grammar_body, unsigned int * grammar_tail) {
+int load_grammar(const std::string & grammar_filename, unsigned short * grammar_body, unsigned int * grammar_tail) {
     std::ifstream chomsky_stream(grammar_filename);
 
     std::string line, tmp;
@@ -295,7 +295,7 @@ int load_grammar(const std::string & grammar_filename, real * grammar_body, unsi
 
     for (size_t i = 0; i < rules.size(); i++) {
         grammar_body[i] = toBoolVector(rules[i].first);
-        grammar_tail[i] = (((unsigned int)toBoolVector(rules[i].second.first)) << (sizeof(real) * 8)) | (unsigned int)toBoolVector(rules[i].second.second);
+        grammar_tail[i] = (((unsigned int)toBoolVector(rules[i].second.first)) << 16) | (unsigned int)toBoolVector(rules[i].second.second);
     }
 
     return rules.size();
@@ -395,7 +395,7 @@ int main(int argc, char **argv)
   
     /* Set CSR reading from MM file */
     int grammar_size = 6;
-    real * grammar_body = (unsigned short *)calloc(grammar_size, sizeof(unsigned short));
+    unsigned short * grammar_body = (unsigned short *)calloc(grammar_size, sizeof(unsigned short));
     grammar_body[0] = 0x1;
 //    grammar_body[0] = 0x4;
     grammar_body[1] = 0x1;
@@ -424,7 +424,6 @@ int main(int argc, char **argv)
     load_graph(argv[2], &mat_a);
     load_graph(argv[2], &mat_b);
 #endif
-  
     spgemm_csr(&mat_a, &mat_b, &mat_c, grammar_size, grammar_body, grammar_tail);
 
     release_cpu_csr(mat_a);
