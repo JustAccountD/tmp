@@ -261,7 +261,7 @@ int load_grammar(const std::string & grammar_filename, real * grammar_body, unsi
 
     std::map<std::string, unsigned int> nonterminal_to_index;
     std::vector<unsigned int> epsilon_nonterminals;
-    std::vector<std::pair<unsigned int, nonterminals_pair>> rules;
+    std::vector<std::pair<unsigned int, std::pair<unsigned int, unsigned int> > > rules;
 
     while (getline(chomsky_stream, line)) {
         vector <std::string> terms;
@@ -365,7 +365,7 @@ void load_graph(const std::string & graph_filename, sfCSR * matrix) {
     }
     rpt_[matrix->M] = offset; // amount of all not null
 
-    each_row_index = (int *)malloc(sizeof(int) * matrix->M);
+    int * each_row_index = (int *)malloc(sizeof(int) * matrix->M);
     for (i = 0; i < matrix->M; i++) {
         each_row_index[i] = 0;
     }
@@ -394,7 +394,7 @@ int main(int argc, char **argv)
   
     /* Set CSR reading from MM file */
     int grammar_size = 6;
-    unsigned short * grammar_body = (unsigned short *)calloc(grammar_size, sizeof(unsigned short));
+    real * grammar_body = (unsigned short *)calloc(grammar_size, sizeof(unsigned short));
     grammar_body[0] = 0x1;
 //    grammar_body[0] = 0x4;
     grammar_body[1] = 0x1;
@@ -416,9 +416,9 @@ int main(int argc, char **argv)
     //init_csr_matrix_from_file(&mat_a, argv[1]);
     //init_csr_matrix_from_file(&mat_b, argv[1]);
 
-    grammar_size = load_grammar(argv[1]);
-    load_graph(argv[2], mat_a);
-    load_graph(argv[2], mat_b);
+    grammar_size = load_grammar(argv[1], grammar_body, grammar_tail);
+    load_graph(argv[2], &mat_a);
+    load_graph(argv[2], &mat_b);
   
     spgemm_csr(&mat_a, &mat_b, &mat_c, grammar_size, grammar_body, grammar_tail);
 
