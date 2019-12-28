@@ -414,8 +414,10 @@ int main(int argc, char **argv)
     grammar_tail[4] = 0x00010020;
     grammar_tail[5] = 0x00010040;
     cudaDeviceSynchronize();
-    //init_csr_matrix_from_file(&mat_a, argv[1]);
-    //init_csr_matrix_from_file(&mat_b, argv[1]);
+#ifndef FLOAT
+    init_csr_matrix_from_file(&mat_a, argv[1]);
+    init_csr_matrix_from_file(&mat_b, argv[1]);
+#endif
 
 #ifdef FLOAT
     grammar_size = load_grammar(argv[1], grammar_body, grammar_tail);
