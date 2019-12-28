@@ -10,8 +10,17 @@
 #include <helper_cuda.h>
 
 #include <nsparse.h>
-#include <iostream>
 #ifdef FLOAT
+#include <iostream>
+#include <string>
+#include <vector>
+#include <unordered_map>
+#include <map>
+#include <unordered_map>
+#include <unordered_set>
+#include <sstream>
+#include <fstream>
+
 void csr_copy(sfCSR * src, sfCSR * dst) {
     release_csr(*dst);
     dst->M = src->M;
