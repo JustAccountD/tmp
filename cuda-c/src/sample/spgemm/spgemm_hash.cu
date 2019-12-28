@@ -253,11 +253,10 @@ unsigned char toBoolVector(unsigned int number) {
 std::unordered_map<std::string, std::vector<int> > terminal_to_nonterminals;
 
 int load_grammar(const std::string & grammar_filename, real * grammar_body, unsigned int * grammar_tail) {
-    auto chomsky_stream = std::ifstream(grammar_filename, ifstream::in);
+    auto chomsky_stream = std::ifstream(grammar_filename, std::ifstream::in);
 
     std::string line, tmp;
     unsigned int nonterminals_count = 0;
-    unsigned int vertices_count = 0;
 
     std::map<std::string, unsigned int> nonterminal_to_index;
     std::vector<unsigned int> epsilon_nonterminals;
