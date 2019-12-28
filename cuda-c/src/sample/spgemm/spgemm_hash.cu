@@ -133,6 +133,7 @@ void spgemm_csr(sfCSR *a, sfCSR *b, sfCSR *c, int grSize, unsigned short int * g
   
     /* Count flop of SpGEMM computation */
     get_spgemm_flop(a, b, a->M, &flop_count);
+    printf("After spgemm_flop_memcpy\n");
 
     /* Execution of SpGEMM on Device */
     ave_msec = 0;
