@@ -10,7 +10,7 @@
 #include <helper_cuda.h>
 
 #include <nsparse.h>
-
+#include <iostream>
 #ifdef FLOAT
 void csr_copy(sfCSR * src, sfCSR * dst) {
     release_csr(*dst);
@@ -263,6 +263,7 @@ int main(int argc, char **argv)
     grammar_tail[3] = 0x00080040;
     grammar_tail[4] = 0x00010020;
     grammar_tail[5] = 0x00010040;
+    std::cout << "HELLOOOOO!\n";
     cudaDeviceSynchronize();
     init_csr_matrix_from_file(&mat_a, argv[1]);
     init_csr_matrix_from_file(&mat_b, argv[1]);
