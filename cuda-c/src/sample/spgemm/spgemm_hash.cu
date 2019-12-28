@@ -333,17 +333,22 @@ void load_graph(const std::string & graph_filename, sfCSR * matrix) {
         row_coo[i] = edge.second.first;
         col_coo[i] = edge.second.second;
         val_coo[i] = bool_vector;
+        i++;
     }
 
 
     /* Count the number of non-zero in each row */
-    int num = matrix->N;
+    int num = i;
     int * nnz_num = (int *)malloc(sizeof(int) * matrix->M);
     for (i = 0; i < matrix->M; i++) {
         nnz_num[i] = 0;
     }
     for (i = 0; i < num; i++) {
         nnz_num[row_coo[i]]++;
+    }
+
+    for (i = 0; i < matrix->M; i++) {
+        matrix->nnz += nnz_num[i];
     }
 
     // Store matrix in CSR format
