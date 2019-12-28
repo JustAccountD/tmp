@@ -245,7 +245,7 @@ void spgemm_csr(sfCSR *a, sfCSR *b, sfCSR *c, int grSize, unsigned short int * g
 
 }
 
-
+#ifdef FLOAT
 unsigned char toBoolVector(unsigned int number) {
     return ((real)0x1) << number;
 }
@@ -385,6 +385,7 @@ void load_graph(const std::string & graph_filename, sfCSR * matrix) {
     free(val_coo);
     free(each_row_index);
 }
+#endif
 
 
 /* Main Function */
@@ -416,9 +417,11 @@ int main(int argc, char **argv)
     //init_csr_matrix_from_file(&mat_a, argv[1]);
     //init_csr_matrix_from_file(&mat_b, argv[1]);
 
+#ifdef FLOAT
     grammar_size = load_grammar(argv[1], grammar_body, grammar_tail);
     load_graph(argv[2], &mat_a);
     load_graph(argv[2], &mat_b);
+#endif
   
     spgemm_csr(&mat_a, &mat_b, &mat_c, grammar_size, grammar_body, grammar_tail);
 
