@@ -420,8 +420,11 @@ int main(int argc, char **argv)
 #endif
 
 #ifdef FLOAT
+    printf("Before loading\n");
     grammar_size = load_grammar(argv[1], grammar_body, grammar_tail);
+    printf("Grammar loaded\n");
     load_graph(argv[2], &mat_a);
+    printf("Graph loaded\n");
     load_graph(argv[2], &mat_b);
 #endif
     spgemm_csr(&mat_a, &mat_b, &mat_c, grammar_size, grammar_body, grammar_tail);
