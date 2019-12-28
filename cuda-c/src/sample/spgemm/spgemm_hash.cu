@@ -236,6 +236,145 @@ void spgemm_csr(sfCSR *a, sfCSR *b, sfCSR *c, int grSize, unsigned short int * g
 }
 
 
+unsigned char toBoolVector(unsigned int number) {
+    return ((real)0x1) << number;
+}
+
+std::unordered_map<std::string, std::vector<int>> terminal_to_nonterminals;
+
+int load_grammar(const string & grammar_filename, real * grammar_body, unsigned int * grammar_tail) {
+    auto chomsky_stream = ifstream(grammar_filename, ifstream::in);
+
+    string line, tmp;
+    unsigned int nonterminals_count = 0;
+    unsigned int vertices_count = 0;
+
+    std::map<std::string, unsigned int> nonterminal_to_index;
+    std::vector<unsigned int> epsilon_nonterminals;
+    std::vector<std::pair<unsigned int, nonterminals_pair>> rules;
+
+    while (getline(chomsky_stream, line)) {
+        vector <string> terms;
+        istringstream iss(line);
+        while (iss >> tmp) {
+            terms.push_back(tmp);
+        }
+        if (!nonterminal_to_index.count(terms[0])) {
+            nonterminal_to_index[terms[0]] = nonterminals_count++;
+        }
+        if (terms.size() == 1) {
+            epsilon_nonterminals.push_back(nonterminal_to_index[terms[0]]);
+        } else if (terms.size() == 2) {
+            if (!terminal_to_nonterminals.count(terms[1])) {
+                terminal_to_nonterminals[terms[1]] = {};
+            }
+            terminal_to_nonterminals[terms[1]].push_back(nonterminal_to_index[terms[0]]);
+        } else if (terms.size() == 3) {
+            if (!nonterminal_to_index.count(terms[1])) {
+                nonterminal_to_index[terms[1]] = nonterminals_count++;
+            }
+            if (!nonterminal_to_index.count(terms[2])) {
+                nonterminal_to_index[terms[2]] = nonterminals_count++;
+            }
+            rules.push_back(
+                    {nonterminal_to_index[terms[0]], {nonterminal_to_index[terms[1]], nonterminal_to_index[terms[2]]}});
+        }
+    }
+    chomsky_stream.close();
+
+
+
+    for (size_t i = 0; i < rules.size(); i++) {
+        grammar_body[i] = toBoolVector(rules[i].first);
+        grammar_tail[i] = (((unsigned int)toBoolVector(rules[i].second.first)) << (sizeof(real) * 8)) | (unsigned int)toBoolVector(rules[i].second.second);
+    }
+
+    return rules.size();
+}
+
+void load_graph(const string & graph_filename, sfCSR * matrix) {
+    std::vector<std::pair<std::string, std::pair<unsigned int, unsigned int> > > edges;
+    unsigned int vertices_count = 0;
+
+    auto graph_stream = ifstream(graph_filename, ifstream::in);
+    unsigned int from, to;
+    string terminal;
+    while (graph_stream >> from >> terminal >> to) {
+        edges.push_back({terminal, {from, to}});
+        vertices_count = max(vertices_count, max(from, to) + 1);
+    }
+    graph_stream.close();
+
+    matrix->nnz = 0;
+    matrix->M = vertices_count;
+    matrix->N = vertices_count;
+    col_coo = (int *)malloc(sizeof(int) * edges.size());
+    row_coo = (int *)malloc(sizeof(int) * edges.size());
+    val_coo = (real *)malloc(sizeof(real) * edges.size());
+    int i = 0;
+
+    for (auto & edge : edges) {
+        if (terminal_to_nonterminals.count(edge.first) == 0) {
+            continue;
+        }
+        auto nonterminals = terminal_to_nonterminals.at(edge.first);
+        unsigned short bool_vector = 0;
+        for (auto nonterminal : nonterminals) {
+            bool_vector |= toBoolVector(nonterminal);
+        }
+
+        row_coo[i] = edge.second.first;
+        col_coo[i] = edge.second.second;
+        val_coo[i] = bool_vector;
+    }
+
+
+    /* Count the number of non-zero in each row */
+    nnz_num = (int *)malloc(sizeof(int) * matrix->M);
+    for (i = 0; i < matrix->M; i++) {
+        nnz_num[i] = 0;
+    }
+    for (i = 0; i < num; i++) {
+        nnz_num[row_coo[i]]++;
+    }
+
+    // Store matrix in CSR format
+    /* Allocation of rpt, col, val */
+    rpt_ = (int *)malloc(sizeof(int) * (matrix->M + 1));
+    col_ = (int *)malloc(sizeof(int) * matrix->nnz);
+    val_ = (real *)malloc(sizeof(real) * matrix->nnz);
+
+    offset = 0;
+    matrix->nnz_max = 0;
+    for (i = 0; i < matrix->M; i++) {
+        rpt_[i] = offset; // looks like we have amount of not null in rows before this row
+        offset += nnz_num[i];
+        if(matrix->nnz_max < nnz_num[i]){
+            matrix->nnz_max = nnz_num[i];
+        }
+    }
+    rpt_[matrix->M] = offset; // amount of all not null
+
+    each_row_index = (int *)malloc(sizeof(int) * matrix->M);
+    for (i = 0; i < matrix->M; i++) {
+        each_row_index[i] = 0;
+    }
+
+    for (i = 0; i < num; i++) {
+        col_[rpt_[row_coo[i]] + each_row_index[row_coo[i]]] = col_coo[i];
+        val_[rpt_[row_coo[i]] + each_row_index[row_coo[i]]++] = val_coo[i];
+    }
+
+    matrix->rpt = rpt_;
+    matrix->col = col_;
+    matrix->val = val_;
+
+    free(nnz_num);
+    free(row_coo);
+    free(col_coo);
+    free(val_coo);
+    free(each_row_index);
+}
 
 
 /* Main Function */
@@ -263,10 +402,13 @@ int main(int argc, char **argv)
     grammar_tail[3] = 0x00080040;
     grammar_tail[4] = 0x00010020;
     grammar_tail[5] = 0x00010040;
-    std::cout << "HELLOOOOO!\n";
     cudaDeviceSynchronize();
-    init_csr_matrix_from_file(&mat_a, argv[1]);
-    init_csr_matrix_from_file(&mat_b, argv[1]);
+    //init_csr_matrix_from_file(&mat_a, argv[1]);
+    //init_csr_matrix_from_file(&mat_b, argv[1]);
+
+    grammar_size = load_grammar(argv[1]);
+    load_graph(argv[2], mat_a);
+    load_graph(argv[2], mat_b);
   
     spgemm_csr(&mat_a, &mat_b, &mat_c, grammar_size, grammar_body, grammar_tail);
 
