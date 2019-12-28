@@ -126,8 +126,10 @@ void spgemm_csr(sfCSR *a, sfCSR *b, sfCSR *c, int grSize, unsigned short int * g
     }
   
     /* Memcpy A and B from Host to Device */
+    printf("Before csr_memcpy\n");
     csr_memcpy(a);
     csr_memcpy(b);
+    printf("After csr_memcpy\n");
   
     /* Count flop of SpGEMM computation */
     get_spgemm_flop(a, b, a->M, &flop_count);
@@ -143,12 +145,7 @@ void spgemm_csr(sfCSR *a, sfCSR *b, sfCSR *c, int grSize, unsigned short int * g
         int noChange = 0;
         bool first = true;
         int nnzS = 0;
-        int u = 0;
         while (!noChange) {
-            u++;
-            if (u > 4) {
-                break;
-            }
             printf("Ready for mult\n");
             if (first) {
                 first = false;
