@@ -335,7 +335,7 @@ void load_graph(const std::string & graph_filename, sfCSR * matrix) {
         val_coo[i] = bool_vector;
     }
 
-    printf("MATRIX loader: dimension: %d, nnz: %d\n", matrix->M, matrix->nnz);
+
     /* Count the number of non-zero in each row */
     int num = matrix->N;
     int * nnz_num = (int *)malloc(sizeof(int) * matrix->M);
@@ -382,6 +382,7 @@ void load_graph(const std::string & graph_filename, sfCSR * matrix) {
     free(col_coo);
     free(val_coo);
     free(each_row_index);
+    printf("MATRIX loader: dimension: %d, nnz: %d\n", matrix->M, matrix->nnz);
 }
 #endif
 
