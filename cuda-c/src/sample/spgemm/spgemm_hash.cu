@@ -253,7 +253,7 @@ unsigned char toBoolVector(unsigned int number) {
 std::unordered_map<std::string, std::vector<int> > terminal_to_nonterminals;
 
 int load_grammar(const std::string & grammar_filename, real * grammar_body, unsigned int * grammar_tail) {
-    auto chomsky_stream = std::ifstream(grammar_filename);
+    std::ifstream chomsky_stream(grammar_filename);
 
     std::string line, tmp;
     unsigned int nonterminals_count = 0;
@@ -305,7 +305,7 @@ void load_graph(const std::string & graph_filename, sfCSR * matrix) {
     std::vector<std::pair<std::string, std::pair<unsigned int, unsigned int> > > edges;
     unsigned int vertices_count = 0;
 
-    auto graph_stream = std::ifstream(graph_filename);
+    std::ifstream graph_stream(graph_filename);
     unsigned int from, to;
     std::string terminal;
     while (graph_stream >> from >> terminal >> to) {
