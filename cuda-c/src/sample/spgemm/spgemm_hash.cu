@@ -126,14 +126,11 @@ void spgemm_csr(sfCSR *a, sfCSR *b, sfCSR *c, int grSize, unsigned short int * g
     }
   
     /* Memcpy A and B from Host to Device */
-    printf("Before csr_memcpy\n");
     csr_memcpy(a);
     csr_memcpy(b);
-    printf("After csr_memcpy\n");
-  
+
     /* Count flop of SpGEMM computation */
     get_spgemm_flop(a, b, a->M, &flop_count);
-    printf("After spgemm_flop_memcpy\n");
 
     /* Execution of SpGEMM on Device */
     ave_msec = 0;
@@ -387,7 +384,7 @@ void load_graph(const std::string & graph_filename, sfCSR * matrix) {
     free(col_coo);
     free(val_coo);
     free(each_row_index);
-    printf("MATRIX loader: dimension: %d, nnz: %d\n", matrix->M, matrix->nnz);
+    //printf("MATRIX loader: dimension: %d, nnz: %d\n", matrix->M, matrix->nnz);
 }
 #endif
 
@@ -424,13 +421,13 @@ int main(int argc, char **argv)
 #endif
 
 #ifdef FLOAT
-    printf("Before loading\n");
+    //printf("Before loading\n");
     grammar_size = load_grammar(argv[1], grammar_body, grammar_tail);
-    printf("Grammar loaded\n");
+    //printf("Grammar loaded\n");
     load_graph(argv[2], &mat_a);
-    printf("Graph loaded\n");
+    //printf("Graph loaded\n");
     load_graph(argv[2], &mat_b);
-    printf("NNZ_A: %d, NNZ_B: %d\n", mat_a.nnz, mat_b.nnz);
+    //printf("NNZ_A: %d, NNZ_B: %d\n", mat_a.nnz, mat_b.nnz);
 #endif
     spgemm_csr(&mat_a, &mat_b, &mat_c, grammar_size, grammar_body, grammar_tail);
 
