@@ -20,6 +20,7 @@
 #include <unordered_set>
 #include <sstream>
 #include <fstream>
+using namespace std;
 
 void csr_copy(sfCSR * src, sfCSR * dst) {
     release_csr(*dst);
@@ -249,12 +250,12 @@ unsigned char toBoolVector(unsigned int number) {
     return ((real)0x1) << number;
 }
 
-std::unordered_map<std::string, std::vector<int>> terminal_to_nonterminals;
+std::unordered_map<std::string, std::vector<int> > terminal_to_nonterminals;
 
-int load_grammar(const string & grammar_filename, real * grammar_body, unsigned int * grammar_tail) {
-    auto chomsky_stream = ifstream(grammar_filename, ifstream::in);
+int load_grammar(const std::string & grammar_filename, real * grammar_body, unsigned int * grammar_tail) {
+    auto chomsky_stream = std::ifstream(grammar_filename, ifstream::in);
 
-    string line, tmp;
+    std::string line, tmp;
     unsigned int nonterminals_count = 0;
     unsigned int vertices_count = 0;
 
@@ -263,7 +264,7 @@ int load_grammar(const string & grammar_filename, real * grammar_body, unsigned 
     std::vector<std::pair<unsigned int, nonterminals_pair>> rules;
 
     while (getline(chomsky_stream, line)) {
-        vector <string> terms;
+        vector <std::string> terms;
         istringstream iss(line);
         while (iss >> tmp) {
             terms.push_back(tmp);
@@ -301,13 +302,13 @@ int load_grammar(const string & grammar_filename, real * grammar_body, unsigned 
     return rules.size();
 }
 
-void load_graph(const string & graph_filename, sfCSR * matrix) {
+void load_graph(const std::string & graph_filename, sfCSR * matrix) {
     std::vector<std::pair<std::string, std::pair<unsigned int, unsigned int> > > edges;
     unsigned int vertices_count = 0;
 
-    auto graph_stream = ifstream(graph_filename, ifstream::in);
+    auto graph_stream = std::ifstream(graph_filename, ifstream::in);
     unsigned int from, to;
-    string terminal;
+    std::string terminal;
     while (graph_stream >> from >> terminal >> to) {
         edges.push_back({terminal, {from, to}});
         vertices_count = max(vertices_count, max(from, to) + 1);
