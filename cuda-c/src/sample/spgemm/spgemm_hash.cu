@@ -167,7 +167,7 @@ void spgemm_csr(sfCSR *a, sfCSR *b, sfCSR *c, int grSize, unsigned short int * g
             cudaEventRecord(event[2], 0);
             sumSparse<<<1, 1>>>(a->M, a->d_rpt, a->d_val, a->d_col, c->d_rpt, c->d_val, c->d_col, b->d_rpt, b->d_val, b->d_col);
             cudaEventRecord(event[3], 0);
-            cudaEventElapsedTime(&msec_sum, event[0], event[1]);
+            cudaEventElapsedTime(&msec_sum, event[2], event[3]);
             ave_msec_sum += msec_sum;
 
             cudaMemcpyFromSymbol(&nnzS, nnzSum, sizeof(int), 0, cudaMemcpyDeviceToHost);
