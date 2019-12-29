@@ -188,7 +188,7 @@ void spgemm_csr(sfCSR *a, sfCSR *b, sfCSR *c, int grSize, unsigned short int * g
             }
             cudaThreadSynchronize();
         }
-        printf("Average 'in sum' time: %f\n", ave_msec_sum / u);
+        printf("Average 'in sum' time: %f %d %f\n", ave_msec_sum, u, ave_msec_sum / u);
 #endif
         cudaEventRecord(event[1], 0);
         cudaThreadSynchronize();
