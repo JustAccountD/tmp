@@ -118,10 +118,10 @@ void spgemm_csr(sfCSR *a, sfCSR *b, sfCSR *c, int grSize, unsigned short int * g
     int i;
   
     long long int flop_count;
-    cudaEvent_t event[2];
-    float msec, ave_msec, flops;
+    cudaEvent_t event[4];
+    float msec, msec_sum, ave_msec, ave_msec_sum, flops;
   
-    for (i = 0; i < 2; i++) {
+    for (i = 0; i < 4; i++) {
         cudaEventCreate(&(event[i]));
     }
   
@@ -134,6 +134,7 @@ void spgemm_csr(sfCSR *a, sfCSR *b, sfCSR *c, int grSize, unsigned short int * g
 
     /* Execution of SpGEMM on Device */
     ave_msec = 0;
+    ave_msec_sum = 0;
     for (i = 0; i < SPGEMM_TRI_NUM; i++) {
         if (i > 0) {
             release_csr(*c);
@@ -143,7 +144,9 @@ void spgemm_csr(sfCSR *a, sfCSR *b, sfCSR *c, int grSize, unsigned short int * g
         int noChange = 0;
         bool first = true;
         int nnzS = 0;
+        int u = 0;
         while (!noChange) {
+            u++;
             printf("Ready for mult\n");
             if (first) {
                 first = false;
@@ -161,7 +164,12 @@ void spgemm_csr(sfCSR *a, sfCSR *b, sfCSR *c, int grSize, unsigned short int * g
             cudaFree(b->d_val);
             checkCudaErrors(cudaMalloc((void **)&(b->d_col), sizeof(int) * (a->nnz + c->nnz)));
             checkCudaErrors(cudaMalloc((void **)&(b->d_val), sizeof(real) * (a->nnz + c->nnz)));
+            cudaEventRecord(event[2], 0);
             sumSparse<<<1, 1>>>(a->M, a->d_rpt, a->d_val, a->d_col, c->d_rpt, c->d_val, c->d_col, b->d_rpt, b->d_val, b->d_col);
+            cudaEventRecord(event[3], 0);
+            cudaEventElapsedTime(&msec_sum, event[0], event[1]);
+            ave_msec_sum += msec_sum;
+
             cudaMemcpyFromSymbol(&nnzS, nnzSum, sizeof(int), 0, cudaMemcpyDeviceToHost);
             b->nnz = nnzS;
             csr_copy(b, a);
@@ -180,6 +188,7 @@ void spgemm_csr(sfCSR *a, sfCSR *b, sfCSR *c, int grSize, unsigned short int * g
             }
             cudaThreadSynchronize();
         }
+        printf("Average 'in sum' time: %d\n", ave_msec_sum / u);
 #endif
         cudaEventRecord(event[1], 0);
         cudaThreadSynchronize();
