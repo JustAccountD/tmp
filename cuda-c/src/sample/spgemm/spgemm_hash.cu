@@ -169,7 +169,7 @@ void spgemm_csr(sfCSR *a, sfCSR *b, sfCSR *c, int grSize, unsigned short int * g
             high_resolution_clock::time_point begin_sum_time = high_resolution_clock::now();
             sumSparse<<<1, 1>>>(a->M, a->d_rpt, a->d_val, a->d_col, c->d_rpt, c->d_val, c->d_col, b->d_rpt, b->d_val, b->d_col);
             high_resolution_clock::time_point end_sum_time = high_resolution_clock::now();
-            milliseconds elapsed_secs = duration_cast<milliseconds>(end_sum_time - begin_sum_time)
+            milliseconds elapsed_secs = duration_cast<milliseconds>(end_sum_time - begin_sum_time);
             ave_msec_sum += static_cast<unsigned int>(elapsed_secs.count());
 
             cudaMemcpyFromSymbol(&nnzS, nnzSum, sizeof(int), 0, cudaMemcpyDeviceToHost);
