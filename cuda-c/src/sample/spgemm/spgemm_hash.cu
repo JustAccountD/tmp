@@ -166,16 +166,20 @@ void spgemm_csr(sfCSR *a, sfCSR *b, sfCSR *c, int grSize, unsigned short int * g
             cudaFree(b->d_val);
             checkCudaErrors(cudaMalloc((void **)&(b->d_col), sizeof(int) * (a->nnz + c->nnz)));
             checkCudaErrors(cudaMalloc((void **)&(b->d_val), sizeof(real) * (a->nnz + c->nnz)));
+            printf("Ready for sum!!\n");
             high_resolution_clock::time_point begin_sum_time = high_resolution_clock::now();
             sumSparse<<<1, 1>>>(a->M, a->d_rpt, a->d_val, a->d_col, c->d_rpt, c->d_val, c->d_col, b->d_rpt, b->d_val, b->d_col);
             high_resolution_clock::time_point end_sum_time = high_resolution_clock::now();
+            printf("Success sum!!\n");
             milliseconds elapsed_secs = duration_cast<milliseconds>(end_sum_time - begin_sum_time);
             ave_msec_sum += static_cast<unsigned int>(elapsed_secs.count());
 
+            printf("Ready for copy!!\n");
             cudaMemcpyFromSymbol(&nnzS, nnzSum, sizeof(int), 0, cudaMemcpyDeviceToHost);
             b->nnz = nnzS;
             csr_copy(b, a);
             csr_copy(a, b);
+            printf("Success copy!!\n");
 
             //printf("NNZ of sum: %d RPT last of sum: %d\n", b->nnz, b->rpt[4]);
             cudaError_t result = cudaGetLastError();
