@@ -153,12 +153,12 @@ void spgemm_csr(sfCSR *a, sfCSR *b, sfCSR *c, int grSize, unsigned short int * g
             if (first) {
                 first = false;
 #endif
-                spgemm_kernel_hash(a, b, c, grSize, grBody, grTail, true);
+                spgemm_kernel_hash(a, a, c, grSize, grBody, grTail, true);
 #ifdef FLOAT
             }
             else {
                 release_csr(*c);
-                spgemm_kernel_hash(a, b, c, grSize, grBody, grTail, false);
+                spgemm_kernel_hash(a, a, c, grSize, grBody, grTail, false);
             }
 
             printf("Success mult!!\n");
@@ -171,13 +171,14 @@ void spgemm_csr(sfCSR *a, sfCSR *b, sfCSR *c, int grSize, unsigned short int * g
             sumSparse<<<1, 1>>>(a->M, a->d_rpt, a->d_val, a->d_col, c->d_rpt, c->d_val, c->d_col, b->d_rpt, b->d_val, b->d_col);
             printf("Success sum!!\n");
 
-
             printf("Ready for copy!!\n");
             high_resolution_clock::time_point begin_sum_time = high_resolution_clock::now();
             cudaMemcpyFromSymbol(&nnzS, nnzSum, sizeof(int), 0, cudaMemcpyDeviceToHost);
             b->nnz = nnzS;
-            csr_copy(b, a);
-            csr_copy(a, b);
+
+            a = b;
+//            csr_copy(b, a);
+//            csr_copy(a, b);
             high_resolution_clock::time_point end_sum_time = high_resolution_clock::now();
             printf("Success copy!!\n");
             milliseconds elapsed_secs = duration_cast<milliseconds>(end_sum_time - begin_sum_time);
