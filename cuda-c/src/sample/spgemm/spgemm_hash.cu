@@ -179,7 +179,7 @@ void spgemm_csr(sfCSR *a, sfCSR *b, sfCSR *c, int grSize, unsigned short int * g
             sfCSR * tmp = b;
             b = a;
             a = tmp;
-            printf("NNZ of a after sum: %d\n", a->nnz);
+//            printf("NNZ of a after sum: %d\n", a->nnz);
 //            csr_copy(b, a);
 //            csr_copy(a, b);
             high_resolution_clock::time_point end_sum_time = high_resolution_clock::now();
@@ -218,9 +218,7 @@ void spgemm_csr(sfCSR *a, sfCSR *b, sfCSR *c, int grSize, unsigned short int * g
     ave_msec /= SPGEMM_TRI_NUM - 1;
 #endif
 
-    printf("@@@@@\n");
     flops = (float)(flop_count) / 1000 / 1000 / ave_msec;
-    printf("%%%%%\n");
   
     printf("SpGEMM using CSR format (Hash-based): %f[GFLOPS], %f[ms]\n", flops, ave_msec);
 
