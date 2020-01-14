@@ -176,7 +176,9 @@ void spgemm_csr(sfCSR *a, sfCSR *b, sfCSR *c, int grSize, unsigned short int * g
             cudaMemcpyFromSymbol(&nnzS, nnzSum, sizeof(int), 0, cudaMemcpyDeviceToHost);
             b->nnz = nnzS;
 
-            a = b;
+            sfCSR * tmp = b;
+            b = a;
+            a = tmp;
 //            csr_copy(b, a);
 //            csr_copy(a, b);
             high_resolution_clock::time_point end_sum_time = high_resolution_clock::now();
@@ -222,7 +224,7 @@ void spgemm_csr(sfCSR *a, sfCSR *b, sfCSR *c, int grSize, unsigned short int * g
     printf("SpGEMM using CSR format (Hash-based): %f[GFLOPS], %f[ms]\n", flops, ave_msec);
 
 #ifdef FLOAT
-    c = b;
+    c = a;
 #endif
 
 
