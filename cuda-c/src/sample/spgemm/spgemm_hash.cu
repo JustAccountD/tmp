@@ -153,12 +153,12 @@ void spgemm_csr(sfCSR *a, sfCSR *b, sfCSR *c, int grSize, unsigned short int * g
             if (first) {
                 first = false;
 #endif
-                spgemm_kernel_hash(a, a, c, grSize, grBody, grTail, true);
+                spgemm_kernel_hash(a, b, c, grSize, grBody, grTail, true);
 #ifdef FLOAT
             }
             else {
                 release_csr(*c);
-                spgemm_kernel_hash(a, a, c, grSize, grBody, grTail, false);
+                spgemm_kernel_hash(a, b, c, grSize, grBody, grTail, false);
             }
 
             printf("Success mult!!\n");
@@ -180,9 +180,8 @@ void spgemm_csr(sfCSR *a, sfCSR *b, sfCSR *c, int grSize, unsigned short int * g
             high_resolution_clock::time_point begin_copy_time = high_resolution_clock::now();
             cudaMemcpyFromSymbol(&nnzS, nnzSum, sizeof(int), 0, cudaMemcpyDeviceToHost);
             b->nnz = nnzS;
-            sfCSR * tmp = b;
-            b = a;
-            a = tmp;
+            csr_copy(b, a);
+            csr_copy(a, b);
             high_resolution_clock::time_point end_copy_time = high_resolution_clock::now();
 
             printf("Success copy!!\n");
@@ -226,7 +225,7 @@ void spgemm_csr(sfCSR *a, sfCSR *b, sfCSR *c, int grSize, unsigned short int * g
     printf("SpGEMM using CSR format (Hash-based): %f[GFLOPS], %f[ms]\n", flops, ave_msec);
 
 #ifdef FLOAT
-    c = a;
+    c = b;
 #endif
 
 
