@@ -200,8 +200,11 @@ void spgemm_csr(sfCSR *a, sfCSR *b, sfCSR *c, int grSize, unsigned short int * g
         printf("Average 'in copy' time: %d %d %f\n", ave_msec_sum, u, ave_msec_sum / (double)u);
 #endif
         cudaEventRecord(event[1], 0);
+        printf("$$$$\n");
         cudaThreadSynchronize();
+        printf("%%%%%\n");
         cudaEventElapsedTime(&msec, event[0], event[1]);
+        printf("@@@@@\n");
 
 #ifndef FLOAT
         if (i > 0) {
