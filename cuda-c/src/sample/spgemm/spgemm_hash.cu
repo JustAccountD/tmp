@@ -23,7 +23,7 @@
 #include <fstream>
 
 #include <cusp/elementwise.h>
-#include <cusp/array2d.h>
+#include <cusp/csr_matrix.h>
 #include <cusp/print.h>
 
 using namespace std;
@@ -458,15 +458,20 @@ int main(int argc, char **argv)
     load_graph(argv[2], &mat_b);
     printf("NNZ_A: %d, NNZ_B: %d\n", mat_a.nnz, mat_b.nnz);
 
-    cusp::array2d<float, cusp::host_memory> A(2,3);
-    A(0,0) = 10;  A(0,1) = 20;  A(0,2) = 30;
-    A(1,0) = 40;  A(1,1) = 50;  A(1,2) = 60;
+    printf("CUSP part\n");
+    cusp::csr_matrix<int, unsigned short, cusp::host_memory> A(3, 3, 3);
+    A.row_offsets[0] = 0;  // first offset is always zero
+    A.row_offsets[1] = 2;
+    A.row_offsets[2] = 3;
+    A.row_offsets[3] = 3;
+    // last offset is always num_entries
+    A.column_indices[0] = 0; A.values[0] = 3;
+    A.column_indices[1] = 0; A.values[1] = 4;
+    A.column_indices[2] = 1; A.values[2] = 5;
     // print A
     cusp::print(A);
     // initialize second 2x3 matrix
-    cusp::array2d<float, cusp::host_memory> B(2,3);
-    B(0,0) = 60;  B(0,1) = 50;  B(0,2) = 40;
-    B(1,0) = 30;  B(1,1) = 20;  B(1,2) = 10;
+    cusp::csr_matrix<int, unsigned short, cusp::host_memory> B(A);
     // print B
     cusp::print(B);
     // compute the sum
@@ -474,6 +479,7 @@ int main(int argc, char **argv)
     cusp::elementwise(A, B, C, thrust::bit_or<int>());
     // print C
     cusp::print(C);
+    printf("End of CUSP part\n");
 #endif
     spgemm_csr(&mat_a, &mat_b, &mat_c, grammar_size, grammar_body, grammar_tail);
 
