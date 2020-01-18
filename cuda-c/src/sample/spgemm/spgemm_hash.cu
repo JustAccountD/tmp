@@ -23,8 +23,8 @@
 #include <fstream>
 
 #include <cusp/elementwise.h>
-#include <cusp/csr_matrix.h>
-#include <cusp/print.h>
+//#include <cusp/csr_matrix.h>
+//#include <cusp/print.h>
 
 using namespace std;
 using namespace std::chrono;
@@ -458,28 +458,28 @@ int main(int argc, char **argv)
     load_graph(argv[2], &mat_b);
     printf("NNZ_A: %d, NNZ_B: %d\n", mat_a.nnz, mat_b.nnz);
 
-    printf("CUSP part\n");
-    cusp::csr_matrix<int, unsigned short, cusp::host_memory> A(3, 3, 3);
-    A.row_offsets[0] = 0;  // first offset is always zero
-    A.row_offsets[1] = 2;
-    A.row_offsets[2] = 3;
-    A.row_offsets[3] = 3;
-    // last offset is always num_entries
-    A.column_indices[0] = 0; A.values[0] = 3;
-    A.column_indices[1] = 0; A.values[1] = 4;
-    A.column_indices[2] = 1; A.values[2] = 5;
-    // print A
-    cusp::print(A);
-    // initialize second 2x3 matrix
-    cusp::csr_matrix<int, unsigned short, cusp::host_memory> B(A);
-    // print B
-    cusp::print(B);
-    // compute the sum
-    cusp::csr_matrix<int, unsigned short, cusp::host_memory> C;
-    cusp::elementwise(A, B, C, thrust::bit_or<int>());
-    // print C
-    cusp::print(C);
-    printf("End of CUSP part\n");
+//    printf("CUSP part\n");
+//    cusp::csr_matrix<int, unsigned short, cusp::host_memory> A(3, 3, 3);
+//    A.row_offsets[0] = 0;  // first offset is always zero
+//    A.row_offsets[1] = 2;
+//    A.row_offsets[2] = 3;
+//    A.row_offsets[3] = 3;
+//    // last offset is always num_entries
+//    A.column_indices[0] = 0; A.values[0] = 3;
+//    A.column_indices[1] = 0; A.values[1] = 4;
+//    A.column_indices[2] = 1; A.values[2] = 5;
+//    // print A
+//    cusp::print(A);
+//    // initialize second 2x3 matrix
+//    cusp::csr_matrix<int, unsigned short, cusp::host_memory> B(A);
+//    // print B
+//    cusp::print(B);
+//    // compute the sum
+//    cusp::csr_matrix<int, unsigned short, cusp::host_memory> C;
+//    cusp::elementwise(A, B, C, thrust::bit_or<int>());
+//    // print C
+//    cusp::print(C);
+//    printf("End of CUSP part\n");
 #endif
     spgemm_csr(&mat_a, &mat_b, &mat_c, grammar_size, grammar_body, grammar_tail);
 
