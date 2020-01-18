@@ -21,6 +21,11 @@
 #include <sstream>
 #include <chrono>
 #include <fstream>
+
+#include <cusp/elementwise.h>
+#include <cusp/array2d.h>
+#include <cusp/print.h>
+
 using namespace std;
 using namespace std::chrono;
 
@@ -452,6 +457,23 @@ int main(int argc, char **argv)
     //printf("Graph loaded\n");
     load_graph(argv[2], &mat_b);
     printf("NNZ_A: %d, NNZ_B: %d\n", mat_a.nnz, mat_b.nnz);
+
+    cusp::array2d<float, cusp::host_memory> A(2,3);
+    A(0,0) = 10;  A(0,1) = 20;  A(0,2) = 30;
+    A(1,0) = 40;  A(1,1) = 50;  A(1,2) = 60;
+    // print A
+    cusp::print(A);
+    // initialize second 2x3 matrix
+    cusp::array2d<float, cusp::host_memory> B(2,3);
+    B(0,0) = 60;  B(0,1) = 50;  B(0,2) = 40;
+    B(1,0) = 30;  B(1,1) = 20;  B(1,2) = 10;
+    // print B
+    cusp::print(B);
+    // compute the sum
+    cusp::array2d<float, cusp::host_memory> C;
+    cusp::elementwise(A, B, C, thrust::bit_or<int>());
+    // print C
+    cusp::print(C);
 #endif
     spgemm_csr(&mat_a, &mat_b, &mat_c, grammar_size, grammar_body, grammar_tail);
 
