@@ -475,7 +475,7 @@ int main(int argc, char **argv)
     // print B
     cusp::print(B);
     // compute the sum
-    cusp::array2d<float, cusp::host_memory> C;
+    cusp::csr_matrix<int, unsigned short, cusp::host_memory> C;
     cusp::elementwise(A, B, C, thrust::bit_or<int>());
     // print C
     cusp::print(C);
