@@ -162,7 +162,7 @@ __global__ void precount_kernel(sfCSR * a, sfCSR * b, sfCSR * c) {
         colBcnt = rptB[i];
         counter = 0;
 
-        //printf("In start of while: %d %d\n", colAcnt, colBcnt);
+        printf("In start of while: %d %d\n", colAcnt, colBcnt);
         while (colAcnt < rptA[i + 1] || colBcnt < rptB[i + 1]) {
 
             if (colAcnt < rptA[i + 1] && valA[colAcnt] == 0) {
