@@ -143,6 +143,7 @@ __global__ void sumSparse_kernel(sfCSR * a, sfCSR * b, sfCSR * c)
 
 
 __global__ void precount_kernel(sfCSR * a, sfCSR * b, sfCSR * c) {
+    printf("In start of precount!!!\n");
     int sz = a->M;
     int * rptA = a->d_rpt;
     int * colA = a->d_col;
