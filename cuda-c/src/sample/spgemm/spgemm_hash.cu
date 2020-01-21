@@ -22,7 +22,7 @@
 #include <chrono>
 #include <fstream>
 
-#include <cusp/elementwise.h>
+//#include <cusp/elementwise.h>
 //#include <cusp/csr_matrix.h>
 //#include <cusp/print.h>
 
