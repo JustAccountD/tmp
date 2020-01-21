@@ -552,7 +552,7 @@ int main(int argc, char **argv)
     load_graph(argv[2], &mat_a);
     //printf("Graph loaded\n");
     load_graph(argv[2], &mat_b);
-    printf("NNZ_A: %d, NNZ_B: %d\n", mat_a.nnz, mat_b.nnz);
+    printf("NNZ_A: %d, NNZ_B: %d SIZE_A: %d\n", mat_a.nnz, mat_b.nnz, mat_a.M);
 
 //    printf("CUSP part\n");
 //    cusp::csr_matrix<int, unsigned short, cusp::host_memory> A(3, 3, 3);
