@@ -51,6 +51,7 @@ __device__ int nnzSum = 0;
 
 __global__ void set_nnz_sum(int * rptC, int sz) {
     rptC[0] = 0;
+    int i;
     int sum = 0;
     for (i = 1; i <= sz; i++) {
         sum += rptC[i];
