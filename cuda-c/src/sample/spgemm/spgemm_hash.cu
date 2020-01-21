@@ -133,7 +133,6 @@ __global__ void sumSparse_kernel(int sz, int * rptA, int * colA, real * valA, in
 
 
 __global__ void precount_kernel(int sz, int * rptA, int * colA, real * valA, int * rptB, int * colB, real * valB, int * rptC) {
-    printf("In start of precount8!!!\n");
     int colAcnt;
     int colBcnt;
     int i;
@@ -145,7 +144,7 @@ __global__ void precount_kernel(int sz, int * rptA, int * colA, real * valA, int
         colBcnt = rptB[i];
         counter = 0;
 
-        printf("In start of while: %d %d\n", colAcnt, colBcnt);
+        //printf("In start of while: %d %d\n", colAcnt, colBcnt);
         while (colAcnt < rptA[i + 1] || colBcnt < rptB[i + 1]) {
 
             if (colAcnt < rptA[i + 1] && valA[colAcnt] == 0) {
@@ -176,7 +175,7 @@ __global__ void precount_kernel(int sz, int * rptA, int * colA, real * valA, int
                 colBcnt++;
             }
         }
-        nnzSum = counter;
+
         rptC[i + 1] = counter;
     }
 }
@@ -188,8 +187,6 @@ void sumSparse(sfCSR * a, sfCSR * b, sfCSR * c) {
     precount_kernel<<<1, 1>>>(a->M, a->d_rpt, a->d_col, a->d_val, b->d_rpt, b->d_col, b->d_val, c->d_rpt);
     cudaThreadSynchronize();
     int nnzS = -1;
-    cudaMemcpyFromSymbol(&nnzS, nnzSum, sizeof(int), 0, cudaMemcpyDeviceToHost);
-    printf("NNZ_S: %d\n", nnzS);
     cudaError_t result = cudaGetLastError();
     if (result != cudaSuccess) {
         printf("PROBLEM11: %s\n", cudaGetErrorString(result));
