@@ -552,6 +552,10 @@ int main(int argc, char **argv)
 #ifdef FLOAT
     //printf("Before loading\n");
     grammar_size = load_grammar(argv[1], grammar_body, grammar_tail);
+    printf("Grammar:\n");
+    for (q = 0; q < grammar_size; q++) {
+        printf("%p -> %p\n", grammar_body[q], grammar_tail[q]);
+    }
     //printf("Grammar loaded\n");
     load_graph(argv[2], &mat_a);
     //printf("Graph loaded\n");
