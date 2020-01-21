@@ -271,7 +271,7 @@ void spgemm_csr(sfCSR *a, sfCSR *b, sfCSR *c, int grSize, unsigned short int * g
                 printf("PROBLEM1: %s\n", cudaGetErrorString(result));
             }
             sumSparse(a, c, b);
-            cudaError_t result = cudaGetLastError();
+            result = cudaGetLastError();
             if (result != cudaSuccess) {
                 printf("PROBLEM2: %s\n", cudaGetErrorString(result));
             }
@@ -296,7 +296,7 @@ void spgemm_csr(sfCSR *a, sfCSR *b, sfCSR *c, int grSize, unsigned short int * g
             ave_msec_copy += static_cast<unsigned int>(elapsed_secs_c.count());
 
             //printf("NNZ of sum: %d RPT last of sum: %d\n", b->nnz, b->rpt[4]);
-            cudaError_t result = cudaGetLastError();
+            result = cudaGetLastError();
             if (result != cudaSuccess) {
                 printf("PROBLEM3: %s\n", cudaGetErrorString(result));
             }
