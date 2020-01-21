@@ -266,7 +266,15 @@ void spgemm_csr(sfCSR *a, sfCSR *b, sfCSR *c, int grSize, unsigned short int * g
             checkCudaErrors(cudaMalloc((void **)&(b->d_val), sizeof(real) * (a->nnz + c->nnz)));
             printf("Ready for sum!!\n");
             high_resolution_clock::time_point begin_sum_time = high_resolution_clock::now();
+            cudaError_t result = cudaGetLastError();
+            if (result != cudaSuccess) {
+                printf("PROBLEM1: %s\n", cudaGetErrorString(result));
+            }
             sumSparse(a, c, b);
+            cudaError_t result = cudaGetLastError();
+            if (result != cudaSuccess) {
+                printf("PROBLEM2: %s\n", cudaGetErrorString(result));
+            }
             cudaThreadSynchronize();
             high_resolution_clock::time_point end_sum_time = high_resolution_clock::now();
             printf("Success sum!!\n");
@@ -290,13 +298,13 @@ void spgemm_csr(sfCSR *a, sfCSR *b, sfCSR *c, int grSize, unsigned short int * g
             //printf("NNZ of sum: %d RPT last of sum: %d\n", b->nnz, b->rpt[4]);
             cudaError_t result = cudaGetLastError();
             if (result != cudaSuccess) {
-                printf("PROBLEM1: %s\n", cudaGetErrorString(result));
+                printf("PROBLEM3: %s\n", cudaGetErrorString(result));
             }
             cudaMemcpyFromSymbol(&noChange, flagNoChange, sizeof(int), 0, cudaMemcpyDeviceToHost);
             //printf("FLAG: %d\n", noChange);
             result = cudaGetLastError();
             if (result != cudaSuccess) {
-                printf("PROBLEM2: %s\n", cudaGetErrorString(result));
+                printf("PROBLEM4: %s\n", cudaGetErrorString(result));
             }
             cudaThreadSynchronize();
         }
