@@ -69,9 +69,11 @@ __global__ void sumSparse_kernel(int sz, int * rptA, int * colA, real * valA, in
     int idx = threadIdx.x;
     //int newrpt = 0;
     //rptC[0] = 0;
-    int rpt_start_index = idx;
+    int toThread = sz / 1024;
+    toThread = sz % 1024 == 0 ? toThread : toThread + 1;
+    int rpt_start_index = idx * toThread;
     int colCcnt = rptC[rpt_start_index];
-    int rpt_end_index = idx + 1;
+    int rpt_end_index = (idx + 1) * toThread;
     for (i = rpt_start_index; i < rpt_end_index; i++) {
         colAcnt = rptA[i];
         colBcnt = rptB[i];
@@ -139,8 +141,10 @@ __global__ void precount_kernel(int sz, int * rptA, int * colA, real * valA, int
     int idx = threadIdx.x;
     int i;
     int counter;
-    int rpt_start_index = idx;
-    int rpt_end_index = idx + 1;
+    int toThread = sz / 1024;
+    toThread = sz % 1024 == 0 ? toThread : toThread + 1;
+    int rpt_start_index = idx * toThread;
+    int rpt_end_index = (idx + 1) * toThread;
     for (i = rpt_start_index; i < rpt_end_index; i++) {
         colAcnt = rptA[i];
         colBcnt = rptB[i];
@@ -186,7 +190,7 @@ __global__ void precount_kernel(int sz, int * rptA, int * colA, real * valA, int
 // C = A | B and check if C == A (if they are equal flagNoChange will be true)
 // sz - amount of rows (we sum square matrix)
 void sumSparse(sfCSR * a, sfCSR * b, sfCSR * c) {
-    int gridAmount = a->M;
+    int gridAmount = 1024;
     precount_kernel<<<1, gridAmount>>>(a->M, a->d_rpt, a->d_col, a->d_val, b->d_rpt, b->d_col, b->d_val, c->d_rpt);
     cudaThreadSynchronize();
     int nnzS = -1;
