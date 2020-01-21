@@ -204,7 +204,7 @@ __global__ void precount_kernel(sfCSR * a, sfCSR * b, sfCSR * c) {
 void sumSparse(sfCSR * a, sfCSR * b, sfCSR * c) {
     precount_kernel<<<1, 1>>>(a, b, c);
     cudaThreadSynchronize();
-    set_nnz_sum<<<1, 1>>>(rptC, sz); // always in one thread!!!!
+    set_nnz_sum<<<1, 1>>>(c->d_rpt, c->M); // always in one thread!!!!
     cudaThreadSynchronize();
     sumSparse_kernel<<<1, 1>>>(a, b, c);
     cudaThreadSynchronize();
