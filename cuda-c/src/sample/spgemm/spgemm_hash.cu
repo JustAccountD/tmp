@@ -204,8 +204,16 @@ __global__ void precount_kernel(sfCSR * a, sfCSR * b, sfCSR * c) {
 void sumSparse(sfCSR * a, sfCSR * b, sfCSR * c) {
     precount_kernel<<<1, 1>>>(a, b, c);
     cudaThreadSynchronize();
+    cudaError_t result = cudaGetLastError();
+    if (result != cudaSuccess) {
+        printf("PROBLEM11: %s\n", cudaGetErrorString(result));
+    }
     set_nnz_sum<<<1, 1>>>(c->d_rpt, c->M); // always in one thread!!!!
     cudaThreadSynchronize();
+    result = cudaGetLastError();
+    if (result != cudaSuccess) {
+        printf("PROBLEM22: %s\n", cudaGetErrorString(result));
+    }
     sumSparse_kernel<<<1, 1>>>(a, b, c);
     cudaThreadSynchronize();
 }
