@@ -65,13 +65,13 @@ __global__ void sumSparse_kernel(sfCSR * a, sfCSR * b, sfCSR * c)
     flagNoChange = true;
     int sz = a->M;
     int * rptA = a->d_rpt;
-    int * valA = a->d_val;
+    real * valA = a->d_val;
     int * colA = a->d_col;
     int * rptC = c->d_rpt;
-    int * valC = c->d_val;
+    real * valC = c->d_val;
     int * colC = c->d_col;
     int * rptB = b->d_rpt;
-    int * valB = b->d_val;
+    real * valB = b->d_val;
     int * colB = b->d_col;
     int colAcnt;
     int colBcnt;
@@ -147,8 +147,8 @@ __global__ void precount_kernel(sfCSR * a, sfCSR * b, sfCSR * c) {
     int * rptA = a->d_rpt;
     int * colA = a->d_col;
     int * rptC = c->d_rpt;
-    int * valB = b->d_val;
-    int * valA = a->d_val;
+    real * valB = b->d_val;
+    real * valA = a->d_val;
     int * rptB = b->d_rpt;
     int * colB = b->d_col;
     int colAcnt;
