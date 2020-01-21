@@ -48,18 +48,41 @@ void csr_copy(sfCSR * src, sfCSR * dst) {
 __device__ int flagNoChange = true;
 __device__ int nnzSum = 0;
 
-// C = A | B and check if C == A (if they are equal flagNoChange will be false)
-// sz - amount of rows (we sum square matrix)
-__global__ void sumSparse(int sz, int * rptA, real * valA, int * colA, int * rptB, real * valB, int * colB, int * rptC, real * valC, int * colC)
+
+__global__ void set_nnz_sum(int * rptC, int sz) {
+    rptC[0] = 0;
+    int sum = 0;
+    for (i = 1; i <= sz; i++) {
+        sum += rptC[i];
+        rptC[i] = sum;
+    }
+    nnzSum = sum;
+}
+
+__global__ void sumSparse_kernel(sfCSR * a, sfCSR * b, sfCSR * c)
 {
     flagNoChange = true;
-    int colAcnt = 0;
-    int colBcnt = 0;
-    int colCcnt = 0;
+    int sz = a->M;
+    int * rptA = a->d_rpt;
+    int * valA = a->d_val;
+    int * colA = a->d_col;
+    int * rptC = c->d_rpt;
+    int * valC = c->d_val;
+    int * colC = c->d_col;
+    int * rptB = b->d_rpt;
+    int * valB = b->d_val;
+    int * colB = b->d_col;
+    int colAcnt;
+    int colBcnt;
     int i;
-    int newrpt = 0;
-    rptC[0] = 0;
-    for (i = 0; i < sz; i++) {
+    //int newrpt = 0;
+    //rptC[0] = 0;
+    int rpt_start_index = 0;
+    int colCcnt = rptC[rpt_start_index];
+    int rpt_end_index = sz;
+    for (i = rpt_start_index; i < rpt_end_index; i++) {
+        colAcnt = rptA[i];
+        colBcnt = rptB[i];
 
         //printf("In start of while: %d %d\n", colAcnt, colBcnt);
         while (colAcnt < rptA[i + 1] || colBcnt < rptB[i + 1]) {
@@ -74,7 +97,7 @@ __global__ void sumSparse(int sz, int * rptA, real * valA, int * colA, int * rpt
                 continue;
             }
 
-            newrpt++;
+            //newrpt++;
 
             // if both matrix are in game
             if (colAcnt < rptA[i + 1] && colBcnt < rptB[i + 1]) {
@@ -112,9 +135,78 @@ __global__ void sumSparse(int sz, int * rptA, real * valA, int * colA, int * rpt
             }
         }
 
-        rptC[i + 1] = newrpt;
-        nnzSum = newrpt;
+        //rptC[i + 1] = newrpt;
+        //nnzSum = newrpt;
     }
+}
+
+
+__global__ void precount_kernel(sfCSR * a, sfCSR * b, sfCSR * c) {
+    int sz = a->M;
+    int * rptA = a->d_rpt;
+    int * colA = a->d_col;
+    int * rptC = c->d_rpt;
+    int * valB = b->d_val;
+    int * valA = a->d_val;
+    int * rptB = b->d_rpt;
+    int * colB = b->d_col;
+    int colAcnt;
+    int colBcnt;
+    int i;
+    int counter;
+    int rpt_start_index = 0;
+    int rpt_end_index = sz;
+    for (i = rpt_start_index; i < rpt_end_index; i++) {
+        colAcnt = rptA[i];
+        colBcnt = rptB[i];
+        counter = 0;
+
+        //printf("In start of while: %d %d\n", colAcnt, colBcnt);
+        while (colAcnt < rptA[i + 1] || colBcnt < rptB[i + 1]) {
+
+            if (colAcnt < rptA[i + 1] && valA[colAcnt] == 0) {
+                colAcnt++;
+                continue;
+            }
+
+            if (colBcnt < rptB[i + 1] && valB[colBcnt] == 0) {
+                colBcnt++;
+                continue;
+            }
+
+            counter++;
+
+            // if both matrix are in game
+            if (colAcnt < rptA[i + 1] && colBcnt < rptB[i + 1]) {
+                if (colA[colAcnt] <= colB[colBcnt]) {
+                    if (colA[colAcnt] == colB[colBcnt]) {
+                        colBcnt++;
+                    }
+                    colAcnt++;
+                } else {
+                    colBcnt++;
+                }
+            } else if (colAcnt < rptA[i + 1]) {
+                colAcnt++;
+            } else {
+                colBcnt++;
+            }
+        }
+
+        rptC[i + 1] = counter;
+    }
+}
+
+
+// C = A | B and check if C == A (if they are equal flagNoChange will be true)
+// sz - amount of rows (we sum square matrix)
+void sumSparse(sfCSR * a, sfCSR * b, sfCSR * c) {
+    precount_kernel<<<1, 1>>>(a, b, c);
+    cudaThreadSynchronize();
+    set_nnz_sum<<<1, 1>>>(rptC, sz); // always in one thread!!!!
+    cudaThreadSynchronize();
+    sumSparse_kernel<<<1, 1>>>(a, b, c);
+    cudaThreadSynchronize();
 }
 #endif
 
@@ -173,7 +265,7 @@ void spgemm_csr(sfCSR *a, sfCSR *b, sfCSR *c, int grSize, unsigned short int * g
             checkCudaErrors(cudaMalloc((void **)&(b->d_val), sizeof(real) * (a->nnz + c->nnz)));
             printf("Ready for sum!!\n");
             high_resolution_clock::time_point begin_sum_time = high_resolution_clock::now();
-            sumSparse<<<1, 1>>>(a->M, a->d_rpt, a->d_val, a->d_col, c->d_rpt, c->d_val, c->d_col, b->d_rpt, b->d_val, b->d_col);
+            sumSparse(a, c, b);
             cudaThreadSynchronize();
             high_resolution_clock::time_point end_sum_time = high_resolution_clock::now();
             printf("Success sum!!\n");
