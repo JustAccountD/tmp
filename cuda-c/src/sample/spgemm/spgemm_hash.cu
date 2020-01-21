@@ -60,19 +60,9 @@ __global__ void set_nnz_sum(int * rptC, int sz) {
     nnzSum = sum;
 }
 
-__global__ void sumSparse_kernel(sfCSR * a, sfCSR * b, sfCSR * c)
+__global__ void sumSparse_kernel(int sz, int * rptA, int * colA, real * valA, int * rptB, int * colB, real * valB, int * rptC, int * colC, real * valC)
 {
     flagNoChange = true;
-    int sz = a->M;
-    int * rptA = a->d_rpt;
-    real * valA = a->d_val;
-    int * colA = a->d_col;
-    int * rptC = c->d_rpt;
-    real * valC = c->d_val;
-    int * colC = c->d_col;
-    int * rptB = b->d_rpt;
-    real * valB = b->d_val;
-    int * colB = b->d_col;
     int colAcnt;
     int colBcnt;
     int i;
@@ -142,24 +132,7 @@ __global__ void sumSparse_kernel(sfCSR * a, sfCSR * b, sfCSR * c)
 }
 
 
-__global__ void precount_kernel(sfCSR * a, sfCSR * b, sfCSR * c) {
-
-    printf("In start of precount!!!\n");
-    int sz = a->M;
-    printf("In start of precount1!!!\n");
-    int * rptA = a->d_rpt;
-    printf("In start of precount2!!!\n");
-    int * colA = a->d_col;
-    printf("In start of precount3!!!\n");
-    int * rptC = c->d_rpt;
-    printf("In start of precount4!!!\n");
-    real * valB = b->d_val;
-    printf("In start of precount5!!!\n");
-    real * valA = a->d_val;
-    printf("In start of precount6!!!\n");
-    int * rptB = b->d_rpt;
-    printf("In start of precount7!!!\n");
-    int * colB = b->d_col;
+__global__ void precount_kernel(int sz, int * rptA, int * colA, real * valA, int * rptB, int * colB, real * valB, int * rptC) {
     printf("In start of precount8!!!\n");
     int colAcnt;
     int colBcnt;
@@ -212,7 +185,7 @@ __global__ void precount_kernel(sfCSR * a, sfCSR * b, sfCSR * c) {
 // C = A | B and check if C == A (if they are equal flagNoChange will be true)
 // sz - amount of rows (we sum square matrix)
 void sumSparse(sfCSR * a, sfCSR * b, sfCSR * c) {
-    precount_kernel<<<1, 1>>>(a, b, c);
+    precount_kernel<<<1, 1>>>(a->M, a->d_rpt, a->d_col, a->d_val, b->d_rpt, b->d_col, b->d_val, c->d_rpt);
     cudaThreadSynchronize();
     int nnzS = -1;
     cudaMemcpyFromSymbol(&nnzS, nnzSum, sizeof(int), 0, cudaMemcpyDeviceToHost);
@@ -227,7 +200,7 @@ void sumSparse(sfCSR * a, sfCSR * b, sfCSR * c) {
     if (result != cudaSuccess) {
         printf("PROBLEM22: %s\n", cudaGetErrorString(result));
     }
-    sumSparse_kernel<<<1, 1>>>(a, b, c);
+    sumSparse_kernel<<<1, 1>>>(a->M, a->d_rpt, a->d_col, a->d_val, b->d_rpt, b->d_col, b->d_val, c->d_rpt, c->d_col, c->d_val);
     cudaThreadSynchronize();
 }
 #endif
