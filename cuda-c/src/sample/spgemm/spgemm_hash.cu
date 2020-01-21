@@ -193,7 +193,7 @@ __global__ void precount_kernel(sfCSR * a, sfCSR * b, sfCSR * c) {
                 colBcnt++;
             }
         }
-
+        nnzSum = counter;
         rptC[i + 1] = counter;
     }
 }
@@ -204,6 +204,9 @@ __global__ void precount_kernel(sfCSR * a, sfCSR * b, sfCSR * c) {
 void sumSparse(sfCSR * a, sfCSR * b, sfCSR * c) {
     precount_kernel<<<1, 1>>>(a, b, c);
     cudaThreadSynchronize();
+    int nnzS = -1;
+    cudaMemcpyFromSymbol(&nnzS, nnzSum, sizeof(int), 0, cudaMemcpyDeviceToHost);
+    printf("NNZ_S: %d\n", nnzS);
     cudaError_t result = cudaGetLastError();
     if (result != cudaSuccess) {
         printf("PROBLEM11: %s\n", cudaGetErrorString(result));
@@ -293,6 +296,7 @@ void spgemm_csr(sfCSR *a, sfCSR *b, sfCSR *c, int grSize, unsigned short int * g
 
             high_resolution_clock::time_point begin_copy_time = high_resolution_clock::now();
             cudaMemcpyFromSymbol(&nnzS, nnzSum, sizeof(int), 0, cudaMemcpyDeviceToHost);
+            printf("GGGNNZ_S: %d\n", nnzS);
             b->nnz = nnzS;
             sfCSR * tmp = b;
             b = a;
