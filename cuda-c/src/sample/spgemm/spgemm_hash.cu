@@ -144,21 +144,29 @@ __global__ void sumSparse_kernel(sfCSR * a, sfCSR * b, sfCSR * c)
 
 __global__ void precount_kernel(sfCSR * a, sfCSR * b, sfCSR * c) {
 
+    printf("In start of precount!!!\n");
     int sz = a->M;
+    printf("In start of precount1!!!\n");
     int * rptA = a->d_rpt;
+    printf("In start of precount2!!!\n");
     int * colA = a->d_col;
+    printf("In start of precount3!!!\n");
     int * rptC = c->d_rpt;
+    printf("In start of precount4!!!\n");
     real * valB = b->d_val;
+    printf("In start of precount5!!!\n");
     real * valA = a->d_val;
+    printf("In start of precount6!!!\n");
     int * rptB = b->d_rpt;
+    printf("In start of precount7!!!\n");
     int * colB = b->d_col;
+    printf("In start of precount8!!!\n");
     int colAcnt;
     int colBcnt;
     int i;
     int counter;
     int rpt_start_index = 0;
     int rpt_end_index = sz;
-    printf("In start of precount!!!\n");
     for (i = rpt_start_index; i < rpt_end_index; i++) {
         colAcnt = rptA[i];
         colBcnt = rptB[i];
