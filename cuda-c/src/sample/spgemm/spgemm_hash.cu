@@ -146,7 +146,7 @@ __global__ void precount_kernel(int sz, int * rptA, int * colA, real * valA, int
     int rpt_start_index = idx * toThread;
     int rpt_end_index = (idx + 1) * toThread;
     if (idx == 0) {
-        printf("HHHHH toThread: %d start: %d stop: %d\n");
+        printf("HHHHH toThread: %d start: %d stop: %d\n", toThread, rpt_start_index, rpt_end_index);
     }
     for (i = rpt_start_index; i < rpt_end_index; i++) {
         colAcnt = rptA[i];
