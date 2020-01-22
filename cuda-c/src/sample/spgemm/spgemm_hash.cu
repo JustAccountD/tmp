@@ -554,6 +554,7 @@ int main(int argc, char **argv)
     grammar_size = load_grammar(argv[1], grammar_body, grammar_tail);
     printf("Grammar:\n");
     int q;
+    printf("Grammar size: %d\n", grammar_size);
     for (q = 0; q < grammar_size; q++) {
         printf("%p -> %p\n", grammar_body[q], grammar_tail[q]);
     }
