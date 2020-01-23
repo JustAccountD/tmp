@@ -280,6 +280,7 @@ void spgemm_csr(sfCSR *a, sfCSR *b, sfCSR *c, int grSize, unsigned short int * g
             printf("Success mult!!\n");
             printf("Matrix after mult\n");
             print_matrix<<<1, 1>>>(c->M, c->d_rpt, c->d_col, c->d_val);
+            cudaThreadSynchronize();
             cudaFree(b->d_col);
             cudaFree(b->d_val);
             checkCudaErrors(cudaMalloc((void **)&(b->d_col), sizeof(int) * (a->nnz + c->nnz)));
@@ -303,6 +304,7 @@ void spgemm_csr(sfCSR *a, sfCSR *b, sfCSR *c, int grSize, unsigned short int * g
 
             printf("Matrix after sum:\n");
             print_matrix<<<1, 1>>>(b->M, b->d_rpt, b->d_col, b->d_val);
+            cudaThreadSynchronize();
             printf("Ready for copy!!\n");
 
             high_resolution_clock::time_point begin_copy_time = high_resolution_clock::now();
