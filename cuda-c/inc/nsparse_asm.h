@@ -100,7 +100,7 @@ __device__ __inline__ int ld_gbl_int32(const int *col) {
   return return_value;
 }
 
-__device__ unsigned short atomicAddShort(unsigned short* address, unsigned short val)
+__device__ unsigned short atomicAddShort(unsigned short * address, unsigned short val)
 {
     unsigned short checktmp = *address;
     unsigned int *base_address = (unsigned int *) ((char *)address - ((size_t)address & 2));	//tera's revised version (showtopic=201975)
@@ -108,7 +108,7 @@ __device__ unsigned short atomicAddShort(unsigned short* address, unsigned short
     unsigned short beforeOr = *address;
     unsigned int long_old = atomicOr(base_address, long_val);
     if (*address != 0) {
-        printf("SUM: %p | %p = %p (before or: %p)\n", checktmp, val, *address, beforeOr);
+        printf("SUM: %p | %p = %p (before or: %p) Address: %p Base address: %p Longval: %p\n", checktmp, val, *address, beforeOr, address, base_address, long_val);
     }
     if ((size_t)address & 2) {
         return (unsigned short)(long_old >> 16);
