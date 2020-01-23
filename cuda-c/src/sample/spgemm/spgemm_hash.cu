@@ -54,6 +54,8 @@ __global__ void print_matrix(int sz, int * rpt, int * col, real * val) {
                 if (col[cnt] == j) {
                     printf("%d ", val[cnt]);
                     cnt++;
+                } else {
+                    printf("0 ");
                 }
             } else {
                 printf("0 ");
