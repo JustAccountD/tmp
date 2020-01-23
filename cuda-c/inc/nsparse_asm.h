@@ -105,8 +105,9 @@ __device__ unsigned short atomicAddShort(unsigned short* address, unsigned short
     unsigned short checktmp = *address;
     unsigned int *base_address = (unsigned int *) ((char *)address - ((size_t)address & 2));	//tera's revised version (showtopic=201975)
     unsigned int long_val = ((size_t)address & 2) ? ((unsigned int)val << 16) : (unsigned short)val;
+    unsigned short beforeOr = *address;
     unsigned int long_old = atomicOr(base_address, long_val);
-    printf("SUM: %p | %p = %p\n", checktmp, val, *address);
+    printf("SUM: %p | %p = %p (before or: %p)\n", checktmp, val, *address, beforeOr);
     if ((size_t)address & 2) {
         return (unsigned short)(long_old >> 16);
     } else {
