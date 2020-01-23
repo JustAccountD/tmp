@@ -279,7 +279,7 @@ void spgemm_csr(sfCSR *a, sfCSR *b, sfCSR *c, int grSize, unsigned short int * g
 
             printf("Success mult!!\n");
             printf("Matrix after mult\n");
-            print_matrix<<<1, 1>>>(c->M, c->d_rpt, c->d_col, c->d_val);
+//            print_matrix<<<1, 1>>>(c->M, c->d_rpt, c->d_col, c->d_val);
             cudaThreadSynchronize();
             cudaFree(b->d_col);
             cudaFree(b->d_val);
@@ -303,7 +303,7 @@ void spgemm_csr(sfCSR *a, sfCSR *b, sfCSR *c, int grSize, unsigned short int * g
             ave_msec_sum += static_cast<unsigned int>(elapsed_secs.count());
 
             printf("Matrix after sum:\n");
-            print_matrix<<<1, 1>>>(b->M, b->d_rpt, b->d_col, b->d_val);
+//            print_matrix<<<1, 1>>>(b->M, b->d_rpt, b->d_col, b->d_val);
             cudaThreadSynchronize();
             printf("Ready for copy!!\n");
 
