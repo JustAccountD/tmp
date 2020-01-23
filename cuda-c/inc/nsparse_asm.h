@@ -107,7 +107,9 @@ __device__ unsigned short atomicAddShort(unsigned short* address, unsigned short
     unsigned int long_val = ((size_t)address & 2) ? ((unsigned int)val << 16) : (unsigned short)val;
     unsigned short beforeOr = *address;
     unsigned int long_old = atomicOr(base_address, long_val);
-    printf("SUM: %p | %p = %p (before or: %p)\n", checktmp, val, *address, beforeOr);
+    if (*address != 0) {
+        printf("SUM: %p | %p = %p (before or: %p)\n", checktmp, val, *address, beforeOr);
+    }
     if ((size_t)address & 2) {
         return (unsigned short)(long_old >> 16);
     } else {
