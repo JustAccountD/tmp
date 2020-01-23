@@ -113,11 +113,6 @@ __device__ unsigned short atomicAddShort(unsigned short * address, unsigned shor
     if ((size_t)address & 2) {
         return (unsigned short)(long_old >> 16);
     } else {
-        unsigned int overflow = ((long_old & 0xffff) + long_val) & 0xffff0000;
-        if (overflow) {
-            printf("CRITICAL SUB\n");
-            atomicSub(base_address, overflow);
-        }
         return (unsigned short)(long_old & 0xffff);
     }
 }
