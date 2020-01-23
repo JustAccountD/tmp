@@ -357,7 +357,7 @@ void spgemm_csr(sfCSR *a, sfCSR *b, sfCSR *c, int grSize, unsigned short int * g
     printf("SpGEMM using CSR format (Hash-based): %f[GFLOPS], %f[ms]\n", flops, ave_msec);
 
 #ifdef FLOAT
-   // c = a;
+    c = a;
 #endif
 
 
