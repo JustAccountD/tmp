@@ -108,14 +108,16 @@ __device__ unsigned short atomicAddShort(unsigned short * address, unsigned shor
     unsigned short beforeOr = *address;
     unsigned int long_old = atomicOr(base_address, long_val);
     if (val != 0) {
-        printf("SUM: %x | %x = %x (before or: %x) Address: %p Base address: %p Longval: %x\n", checktmp, val, *address, beforeOr, address, base_address, long_val);
+        //printf("SUM: %x | %x = %x (before or: %x) Address: %p Base address: %p Longval: %x\n", checktmp, val, *address, beforeOr, address, base_address, long_val);
     }
     if ((size_t)address & 2) {
         return (unsigned short)(long_old >> 16);
     } else {
         unsigned int overflow = ((long_old & 0xffff) + long_val) & 0xffff0000;
-        if (overflow)
+        if (overflow) {
+            printf("CRITICAL SUB\n");
             atomicSub(base_address, overflow);
+        }
         return (unsigned short)(long_old & 0xffff);
     }
 }
