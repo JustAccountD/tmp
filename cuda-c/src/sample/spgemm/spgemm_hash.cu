@@ -46,6 +46,18 @@ void csr_copy(sfCSR * src, sfCSR * dst) {
 }
 
 
+__global__ void print_sum(int nnz, real * val) {
+    int sumAmount = 0;
+    int t;
+    for (t = 0; t < nnz; t++) {
+        if ((val[t] & 0x1) == 0x1) {
+            sumAmount++;
+        }
+    }
+    printf("SumAmountPart: %d\n", sumAmount);
+}
+
+
 __global__ void print_matrix(int sz, int * rpt, int * col, real * val) {
     int i, j, cnt = 0;
     for (i = 1; i <= sz; i++) {
@@ -279,6 +291,7 @@ void spgemm_csr(sfCSR *a, sfCSR *b, sfCSR *c, int grSize, unsigned short int * g
 
             printf("Success mult!!\n");
             printf("Matrix after mult\n");
+            print_sum<<<1, 1>>>(c->nnz, c->d_val);
 //            print_matrix<<<1, 1>>>(c->M, c->d_rpt, c->d_col, c->d_val);
             cudaThreadSynchronize();
             cudaFree(b->d_col);
@@ -302,14 +315,15 @@ void spgemm_csr(sfCSR *a, sfCSR *b, sfCSR *c, int grSize, unsigned short int * g
             milliseconds elapsed_secs = duration_cast<milliseconds>(end_sum_time - begin_sum_time);
             ave_msec_sum += static_cast<unsigned int>(elapsed_secs.count());
 
-            printf("Matrix after sum:\n");
-//            print_matrix<<<1, 1>>>(b->M, b->d_rpt, b->d_col, b->d_val);
-            cudaThreadSynchronize();
             printf("Ready for copy!!\n");
 
             high_resolution_clock::time_point begin_copy_time = high_resolution_clock::now();
             cudaMemcpyFromSymbol(&nnzS, nnzSum, sizeof(int), 0, cudaMemcpyDeviceToHost);
             b->nnz = nnzS;
+            printf("Matrix after sum:\n");
+//            print_matrix<<<1, 1>>>(b->M, b->d_rpt, b->d_col, b->d_val);
+            print_sum<<<1, 1>>>(b->nnz, b->d_val);
+            cudaThreadSynchronize();
             sfCSR * tmp = b;
             b = a;
             a = tmp;
