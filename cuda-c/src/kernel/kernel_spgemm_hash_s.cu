@@ -641,7 +641,7 @@ void setGR(int grSize, unsigned short int * grBody, unsigned int * grTail) {
 }
 
 
-__device__ real mult(real a, real b) {
+__device__ inline real mult(real a, real b) {
     unsigned int tmpA = a;
     unsigned int tmpB = b;
     tmpA <<= 16;
