@@ -513,11 +513,11 @@ void load_graph(const std::string & graph_filename, sfCSR * matrix) {
         tempVec.push_back({{edge.second.first, edge.second.second}, bool_vector});
     }
 
-//    sort(tempVec.begin(), tempVec.end(),
-//    [](const pair<pair<int, int>, unsigned short> & a, const pair<pair<int, int>, unsigned short> & b) -> bool
-//{
-//    return a.first.second > b.first.second;
-//});
+    sort(tempVec.begin(), tempVec.end(),
+    [](const pair<pair<int, int>, unsigned short> & a, const pair<pair<int, int>, unsigned short> & b) -> bool
+{
+    return a.first.second > b.first.second;
+});
 
     for (int i = 0; i < tempVec.size(); i++) {
         //printf("INput: %p %p %p\n", tempVec[i].first.first, tempVec[i].first.second, tempVec[i].second);
