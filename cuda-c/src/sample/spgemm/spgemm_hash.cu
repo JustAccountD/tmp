@@ -516,7 +516,7 @@ void load_graph(const std::string & graph_filename, sfCSR * matrix) {
     sort(tempVec.begin(), tempVec.end(),
     [](const pair<pair<int, int>, unsigned short> & a, const pair<pair<int, int>, unsigned short> & b) -> bool
 {
-    return a.first.second > b.first.second;
+    return a.first.second < b.first.second;
 });
 
     for (int i = 0; i < tempVec.size(); i++) {
