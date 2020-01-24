@@ -60,18 +60,16 @@ __global__ void print_sum(int nnz, real * val) {
 
 __global__ void print_matrix(int sz, int * rpt, int * col, real * val) {
     int i, j, cnt = 0;
+    printf("RPT: \n");
     for (i = 1; i <= sz; i++) {
-        for (j = 0; j < sz; j++) {
-            if (cnt < rpt[i]) {
-                if (col[cnt] == j) {
-                    printf("%d ", val[cnt]);
-                    cnt++;
-                } else {
-                    printf("0 ");
-                }
-            } else {
-                printf("0 ");
-            }
+        printf("%d ", rpt[i]);
+    }
+    printf("\n");
+
+    printf("(Col, VAL)\n");
+    for (i = 1; i <= sz; i++) {
+        while (cnt < rpt[i]) {
+            printf("(%d, %d) ", col[cnt], val[cnt]);
         }
         printf("\n");
     }
@@ -85,10 +83,13 @@ __global__ void set_nnz_sum(int * rptC, int sz) {
     rptC[0] = 0;
     int i;
     int sum = 0;
+    printf("Counted RPT:\n");
     for (i = 1; i <= sz; i++) {
         sum += rptC[i];
         rptC[i] = sum;
+        printf("%d ", rptC[i]);
     }
+    printf("\n");
     nnzSum = sum;
 }
 
@@ -291,8 +292,12 @@ void spgemm_csr(sfCSR *a, sfCSR *b, sfCSR *c, int grSize, unsigned short int * g
 
             printf("Success mult!!\n");
             printf("Matrix after mult\n");
+            cudaThreadSynchronize();
             print_sum<<<1, 1>>>(c->nnz, c->d_val);
-//            print_matrix<<<1, 1>>>(c->M, c->d_rpt, c->d_col, c->d_val);
+            cudaThreadSynchronize();
+            print_matrix<<<1, 1>>>(c->M, c->d_rpt, c->d_col, c->d_val);
+            cudaThreadSynchronize();
+            print_matrix<<<1, 1>>>(a->M, a->d_rpt, a->d_col, a->d_val);
             cudaThreadSynchronize();
             cudaFree(b->d_col);
             cudaFree(b->d_val);
