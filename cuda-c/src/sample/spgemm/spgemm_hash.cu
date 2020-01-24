@@ -524,7 +524,6 @@ void load_graph(const std::string & graph_filename, sfCSR * matrix) {
         row_coo[i] = tempVec[i].first.first;
         col_coo[i] = tempVec[i].first.second;
         val_coo[i] = tempVec[i].second;
-        i++;
     }
 
 
