@@ -22,12 +22,7 @@ OS_SUF = .s.o
 OD_SUF = .d.o
 
 OBJS_LIB = $(OBJ)/nsparse.o
-OBJS_CU_CSR = $(OBJS_LIB) $(OBJ)/sample/spmv/spmv_cu_csr.o
-OBJS_AMB = $(OBJS_LIB) $(OBJ)/conversion/convert_amb.o $(OBJ)/kernel/kernel_spmv_amb.o $(OBJ)/sample/spmv/spmv_amb.o
-OBJS_SPGEMM_CU_CSR = $(OBJS_LIB) $(OBJ)/kernel/kernel_spgemm_cu_csr.o $(OBJ)/sample/spgemm/spgemm_cu_csr.o
 OBJS_SPGEMM_HASH_S = $(OBJS_LIB) $(OBJ)/kernel/kernel_spgemm_cu_csr.o $(OBJ)/kernel/kernel_spgemm_hash_s.o $(OBJ)/sample/spgemm/spgemm_hash.o
-OBJS_SPGEMM_HASH_D = $(OBJS_LIB) $(OBJ)/kernel/kernel_spgemm_cu_csr.o $(OBJ)/kernel/kernel_spgemm_hash_d.o $(OBJ)/sample/spgemm/spgemm_hash.o
-OBJS_SPGEMM_HASH_KERNEL_GEN = $(OBJ)/kernel/spgemm_hash_kernel_gen.o
 
 spgemm_hash :
 	make spgemm_hash_s
