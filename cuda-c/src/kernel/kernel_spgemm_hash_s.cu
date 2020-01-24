@@ -656,7 +656,7 @@ __device__ real mult(real a, real b) {
             mult |= device_grammar_body[i];
         }
     }
-    printf("In Mult: A: %x B: %x RES: %x\n", tmpA, tmpB, mult);
+//    printf("In Mult: A: %x B: %x RES: %x\n", tmpA, tmpB, mult);
     return mult;
 }
 
