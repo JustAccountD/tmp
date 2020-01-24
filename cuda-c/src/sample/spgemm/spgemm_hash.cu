@@ -520,6 +520,7 @@ void load_graph(const std::string & graph_filename, sfCSR * matrix) {
 //});
 
     for (int i = 0; i < tempVec.size(); i++) {
+        printf("INput: %p %p %p\n", tempVec[i].first.first, tempVec[i].first.second, tempVec[i].second);
         row_coo[i] = tempVec[i].first.first;
         col_coo[i] = tempVec[i].first.second;
         val_coo[i] = tempVec[i].second;
