@@ -21,7 +21,7 @@ OBJ_SUF = .o
 OS_SUF = .s.o
 
 OBJS_LIB = $(OBJ)/nsparse.o
-OBJS_SPGEMM_HASH_S = $(OBJS_LIB) $(OBJ)/kernel/kernel_spgemm_cu_csr.o $(OBJ)/kernel/kernel_spgemm_hash_s.o $(OBJ)/sample/spgemm/spgemm_hash.o
+OBJS_SPGEMM_HASH_S = $(OBJS_LIB) $(OBJ)/kernel/kernel_spgemm_hash_s.o $(OBJ)/sample/spgemm/spgemm_hash.o
 
 spgemm_hash :
 	make spgemm_hash_s
