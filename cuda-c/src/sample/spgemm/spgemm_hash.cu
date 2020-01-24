@@ -229,8 +229,7 @@ void spgemm_csr(sfCSR *a, sfCSR *b, sfCSR *c, int grSize, unsigned short int * g
 {
 
     int i;
-  
-    long long int flop_count;
+
     cudaEvent_t event[4];
     float msec, msec_sum, ave_msec, flops;
   
@@ -241,9 +240,6 @@ void spgemm_csr(sfCSR *a, sfCSR *b, sfCSR *c, int grSize, unsigned short int * g
     /* Memcpy A and B from Host to Device */
     csr_memcpy(a);
     csr_memcpy(b);
-
-    /* Count flop of SpGEMM computation */
-    get_spgemm_flop(a, b, a->M, &flop_count);
 
     /* Execution of SpGEMM on Device */
     ave_msec = 0;
@@ -317,10 +313,7 @@ void spgemm_csr(sfCSR *a, sfCSR *b, sfCSR *c, int grSize, unsigned short int * g
 #ifndef FLOAT
     ave_msec /= SPGEMM_TRI_NUM - 1;
 #endif
-
-    flops = (float)(flop_count) / 1000 / 1000 / ave_msec;
-  
-    printf("SpGEMM using CSR format (Hash-based): %f[GFLOPS], %f[ms]\n", flops, ave_msec);
+    printf("Total algorithm time: %f[ms]\n", ave_msec);
 
 #ifdef FLOAT
     c = a;
@@ -339,11 +332,6 @@ void spgemm_csr(sfCSR *a, sfCSR *b, sfCSR *c, int grSize, unsigned short int * g
 #ifndef FLOAT
     release_csr(*c);
 #endif
-
-#ifdef sfDEBUG
-    printf("(nnz of A): %d =>\n(Num of intermediate products): %ld =>\n(nnz of C): %d\n", a->nnz, flop_count / 2, c->nnz);
-#endif
-  
     release_csr(*a);
     release_csr(*b);
     for (i = 0; i < 2; i++) {
