@@ -656,8 +656,7 @@ __device__ real mult(real a, real b) {
 
     if ((0x20004 & conc) == 0x20004) {
         mult |= 0x1;
-    }
-    if ((0x10008 & conc) == 0x10008) {
+    } else if ((0x10008 & conc) == 0x10008) {
         mult |= 0x4;
     }
     return mult;
