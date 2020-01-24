@@ -303,10 +303,10 @@ void spgemm_csr(sfCSR *a, sfCSR *b, sfCSR *c, int grSize, unsigned short int * g
             print_sum<<<1, 1>>>(c->nnz, c->d_val);
             cudaThreadSynchronize();
 //            if (u == 2) {
-                print_matrix<<<1, 1>>>(c->M, c->d_rpt, c->d_col, c->d_val);
-                cudaThreadSynchronize();
-                print_matrix<<<1, 1>>>(a->M, a->d_rpt, a->d_col, a->d_val);
-                cudaThreadSynchronize();
+//                print_matrix<<<1, 1>>>(c->M, c->d_rpt, c->d_col, c->d_val);
+//                cudaThreadSynchronize();
+//                print_matrix<<<1, 1>>>(a->M, a->d_rpt, a->d_col, a->d_val);
+//                cudaThreadSynchronize();
 //            }
             cudaFree(b->d_col);
             cudaFree(b->d_val);
