@@ -499,7 +499,7 @@ int main(int argc, char **argv)
 #endif
 
 #ifdef FLOAT
-//    grammar_size = load_grammar(argv[1], grammar_body, grammar_tail);
+    grammar_size = load_grammar(argv[1], grammar_body, grammar_tail);
     printf("Grammar:\n");
     int q;
     printf("Grammar size: %d\n", grammar_size);
