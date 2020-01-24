@@ -30,14 +30,6 @@ spgemm_hash_s : $(OBJS_SPGEMM_HASH_S:$(OBJ_SUF)=$(OS_SUF))
 	mkdir -p $(BIN)
 	$(NVCC) -o $(BIN)/$@ $(OBJS_SPGEMM_HASH_S:$(OBJ_SUF)=$(OS_SUF)) $(LDFLAGS) $(INCLUDE)
 
-$(OBJ)/%$(OS_SUF) : $(SRC)/%.c
-	mkdir -p $(dir $@)
-	$(CXX) -c -DFLOAT $(CFLAGS) $(INCLUDE) -o $@ $<
-
-$(OBJ)/%$(OS_SUF) : $(SRC)/%.cu
-	mkdir -p $(dir $@)
-	$(NVCC) -c -DFLOAT $(LDFLAGS) $(INCLUDE) -o $@ $<
-
 clean :
 	rm -rf $(BIN)/*
 	rm -rf $(OBJ)/*
