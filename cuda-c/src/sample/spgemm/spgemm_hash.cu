@@ -70,6 +70,7 @@ __global__ void print_matrix(int sz, int * rpt, int * col, real * val) {
     for (i = 1; i <= sz; i++) {
         while (cnt < rpt[i]) {
             printf("(%d, %d) ", col[cnt], val[cnt]);
+            cnt++;
         }
         printf("\n");
     }
