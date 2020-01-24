@@ -1085,7 +1085,7 @@ void spgemm_kernel_hash(sfCSR *a, sfCSR *b, sfCSR *c, int grSize, unsigned short
                         bool setGRflag)
 {
     if (setGRflag) {
-        setGR(grSize, grBody, grTail);
+//        setGR(grSize, grBody, grTail);
     }
     int M;
     sfBIN bin;
