@@ -183,6 +183,9 @@ __global__ void precount_kernel(int sz, int * rptA, int * colA, real * valA, int
         colAcnt = rptA[i];
         colBcnt = rptB[i];
         counter = 0;
+        if (rpt_start_index == 19) {
+            printf("Here start = %d, %d\n", colAcnt, colBcnt);
+        }
 
         //printf("In start of while: %d %d\n", colAcnt, colBcnt);
         while (colAcnt < rptA[i + 1] || colBcnt < rptB[i + 1]) {
