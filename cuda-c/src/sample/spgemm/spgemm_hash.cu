@@ -528,7 +528,8 @@ void load_graph(const std::string & graph_filename, sfCSR * matrix) {
 
 
     /* Count the number of non-zero in each row */
-    int num = i;
+    int num = tempVec.size();
+    int i;
     int * nnz_num = (int *)malloc(sizeof(int) * matrix->M);
     for (i = 0; i < matrix->M; i++) {
         nnz_num[i] = 0;
