@@ -220,7 +220,9 @@ __global__ void precount_kernel(int sz, int * rptA, int * colA, real * valA, int
         }
 
         rptC[i + 1] = counter;
-        printf("RES of rpt: %d\n", counter);
+        if (rpt_start_index == 19) {
+            printf("RES of rpt: %d\n", counter);
+        }
     }
 }
 
