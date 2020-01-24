@@ -490,7 +490,7 @@ int main(int argc, char **argv)
     sfCSR mat_a, mat_b, mat_c;
   
     /* Set CSR reading from MM file */
-    int grammar_size = 6;
+    int grammar_size;
     unsigned short * grammar_body = (unsigned short *)calloc(grammar_size, sizeof(unsigned short));
     unsigned int * grammar_tail = (unsigned int *)calloc(grammar_size, sizeof(unsigned int));
 #ifndef FLOAT
@@ -499,7 +499,7 @@ int main(int argc, char **argv)
 #endif
 
 #ifdef FLOAT
-    grammar_size = load_grammar(argv[1], grammar_body, grammar_tail);
+//    grammar_size = load_grammar(argv[1], grammar_body, grammar_tail);
     printf("Grammar:\n");
     int q;
     printf("Grammar size: %d\n", grammar_size);
