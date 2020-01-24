@@ -661,6 +661,7 @@ __device__ inline real mult(real a, real b) {
 //    }
     if ((0x20004 & conc) == 0x20004 || (0x80010 & conc) == 0x80010 || (0x20020 & conc) == 0x20020 || (0x80040 & conc) == 0x80040) {
         mult |= 0x1;
+        printf("@@@\n");
     } else if ((0x10020 & conc) == 0x10020) {
         mult |= 0x4;
     } else if ((0x10040 & conc) == 0x10040) {
