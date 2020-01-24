@@ -19,7 +19,6 @@ OBJ = ./obj
 
 OBJ_SUF = .o
 OS_SUF = .s.o
-OD_SUF = .d.o
 
 OBJS_LIB = $(OBJ)/nsparse.o
 OBJS_SPGEMM_HASH_S = $(OBJS_LIB) $(OBJ)/kernel/kernel_spgemm_cu_csr.o $(OBJ)/kernel/kernel_spgemm_hash_s.o $(OBJ)/sample/spgemm/spgemm_hash.o
@@ -35,17 +34,9 @@ $(OBJ)/%$(OS_SUF) : $(SRC)/%.c
 	mkdir -p $(dir $@)
 	$(CXX) -c -DFLOAT $(CFLAGS) $(INCLUDE) -o $@ $<
 
-$(OBJ)/%$(OD_SUF) : $(SRC)/%.c
-	mkdir -p $(dir $@)
-	$(CXX) -c -DDOUBLE $(CFLAGS) $(INCLUDE) -o $@ $<
-
 $(OBJ)/%$(OS_SUF) : $(SRC)/%.cu
 	mkdir -p $(dir $@)
 	$(NVCC) -c -DFLOAT $(LDFLAGS) $(INCLUDE) -o $@ $<
-
-$(OBJ)/%$(OD_SUF) : $(SRC)/%.cu
-	mkdir -p $(dir $@)
-	$(NVCC) -c -DDOUBLE $(LDFLAGS) $(INCLUDE) -o $@ $<
 
 clean :
 	rm -rf $(BIN)/*
