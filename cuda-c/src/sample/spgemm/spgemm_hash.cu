@@ -160,7 +160,6 @@ __global__ void sumSparse_kernel(int sz, int * rptA, int * colA, real * valA, in
 
 
 __global__ void precount_kernel(int sz, int * rptA, int * colA, real * valA, int * rptB, int * colB, real * valB, int * rptC) {
-    printf("GO");
     int colAcnt;
     int colBcnt;
     int idx = threadIdx.x;
@@ -170,9 +169,7 @@ __global__ void precount_kernel(int sz, int * rptA, int * colA, real * valA, int
     toThread = sz % AMOUNT_OF_THREADS == 0 ? toThread : toThread + 1;
     int rpt_start_index = idx * toThread;
     int rpt_end_index = (idx + 1) * toThread > sz ? sz : (idx + 1) * toThread;
-    printf("Thread: %d Start: %d End: %d\n", idx, rpt_start_index, rpt_end_index);
     for (i = rpt_start_index; i < rpt_end_index; i++) {
-        printf("Thread: %d Start: %d End: %d\n", idx, rpt_start_index, rpt_end_index);
         colAcnt = rptA[i];
         colBcnt = rptB[i];
         counter = 0;
@@ -217,23 +214,14 @@ __global__ void precount_kernel(int sz, int * rptA, int * colA, real * valA, int
 void sumSparse(sfCSR * a, sfCSR * b, sfCSR * c) {
     int gridAmount = AMOUNT_OF_THREADS;
     cudaError_t error = cudaGetLastError();
-    if (error != cudaSuccess)
-    {
-        printf("1CUDA error: %s\n", cudaGetErrorString(error));
-    }
-    printf("TOTAL THREADS: %d\n", AMOUNT_OF_THREADS);
     precount_kernel<<<1, gridAmount>>>(a->M, a->d_rpt, a->d_col, a->d_val, b->d_rpt, b->d_col, b->d_val, c->d_rpt);
     error = cudaGetLastError();
     if (error != cudaSuccess)
     {
-        printf("2CUDA error: %s\n", cudaGetErrorString(error));
+        printf("CUDA error: %s\n", cudaGetErrorString(error));
     }
     cudaThreadSynchronize();
     error = cudaGetLastError();
-    if (error != cudaSuccess)
-    {
-        printf("3CUDA error: %s\n", cudaGetErrorString(error));
-    }
     int nnzS = -1;
     cudaError_t result = cudaGetLastError();
     set_nnz_sum<<<1, 1>>>(c->d_rpt, c->M); // always in one thread!!!!
