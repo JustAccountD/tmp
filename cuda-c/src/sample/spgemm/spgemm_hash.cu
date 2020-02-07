@@ -160,6 +160,7 @@ __global__ void sumSparse_kernel(int sz, int * rptA, int * colA, real * valA, in
 
 
 __global__ void precount_kernel(int sz, int * rptA, int * colA, real * valA, int * rptB, int * colB, real * valB, int * rptC) {
+    printf("GO");
     int colAcnt;
     int colBcnt;
     int idx = threadIdx.x;
@@ -215,6 +216,7 @@ __global__ void precount_kernel(int sz, int * rptA, int * colA, real * valA, int
 // C = A | B and check if C == A (if they are equal flagNoChange will be true)
 void sumSparse(sfCSR * a, sfCSR * b, sfCSR * c) {
     int gridAmount = AMOUNT_OF_THREADS;
+    printf("TOTAL THREADS: %d\n", AMOUNT_OF_THREADS);
     precount_kernel<<<1, gridAmount>>>(a->M, a->d_rpt, a->d_col, a->d_val, b->d_rpt, b->d_col, b->d_val, c->d_rpt);
     cudaThreadSynchronize();
     int nnzS = -1;
