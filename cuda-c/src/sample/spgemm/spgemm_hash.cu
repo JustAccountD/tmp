@@ -25,7 +25,7 @@
 using namespace std;
 using namespace std::chrono;
 
-#define AMOUNT_OF_THREADS 1025
+#define AMOUNT_OF_THREADS 1024
 
 // not used in last version
 void csr_copy(sfCSR * src, sfCSR * dst) {
