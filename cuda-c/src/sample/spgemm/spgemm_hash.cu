@@ -216,7 +216,7 @@ __global__ void precount_kernel(int sz, int * rptA, int * colA, real * valA, int
 // C = A | B and check if C == A (if they are equal flagNoChange will be true)
 void sumSparse(sfCSR * a, sfCSR * b, sfCSR * c) {
     int gridAmount = AMOUNT_OF_THREADS;
-    error = cudaGetLastError();
+    cudaError_t error = cudaGetLastError();
     if (error != cudaSuccess)
     {
         printf("1CUDA error: %s\n", cudaGetErrorString(error));
@@ -229,7 +229,7 @@ void sumSparse(sfCSR * a, sfCSR * b, sfCSR * c) {
         printf("2CUDA error: %s\n", cudaGetErrorString(error));
     }
     cudaThreadSynchronize();
-    cudaError_t error = cudaGetLastError();
+    error = cudaGetLastError();
     if (error != cudaSuccess)
     {
         printf("3CUDA error: %s\n", cudaGetErrorString(error));
